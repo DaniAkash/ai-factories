@@ -1,0 +1,269 @@
+/*
+ * Design tokens.
+ *
+ * The source style reference is authored for a 1280px page. This deck renders on
+ * a 1920px Slidev canvas, so every size token below is the spec value multiplied
+ * by 1.5. Ratios, tracking relationships, and the 6px base unit are preserved
+ * exactly; only the absolute scale moves.
+ */
+
+:root {
+  /* Colors, unscaled */
+  --color-void: #000000;
+  --color-bone-white: #ffffff;
+  --color-ash-gray: #9a9a9a;
+  --color-silver-mist: #bdbdbd;
+  --color-electric-iris: #8052ff;
+  --color-saffron-spark: #ffb829;
+  --color-deep-verdant: #15846e;
+
+  --font-display: 'PPNeueMontreal', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --font-weight-extralight: 200;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+
+  /* Type scale, spec x 1.5 */
+  --text-caption: 18px;
+  --text-nav-label: 21px;
+  --text-body: 27px;
+  --text-heading-2xs: 36px;
+  --text-heading-xs: 40px;
+  --text-subheading: 54px;
+  --text-heading-sm: 63px;
+  --text-heading: 72px;
+  --text-heading-lg: 117px;
+  --text-display: 170px;
+
+  --tracking-nav-label: 0.525px;
+  --tracking-heading-2xs: -0.72px;
+  --tracking-heading: -2.52px;
+  --tracking-heading-lg: -4.68px;
+  --tracking-display: -6.78px;
+
+  /* Spacing, spec x 1.5 on a 9px base */
+  --spacing-6: 9px;
+  --spacing-12: 18px;
+  --spacing-18: 27px;
+  --spacing-24: 36px;
+  --spacing-30: 45px;
+  --spacing-36: 54px;
+  --spacing-60: 90px;
+  --spacing-96: 144px;
+  --spacing-120: 180px;
+
+  --radius-3xl: 36px;
+  --radius-full: 9999px;
+
+  --page-max-width: 1920px;
+  --frame-inset: 144px;
+}
+
+/* ---------------------------------------------------------------- reset */
+
+.slidev-layout,
+.slidev-page {
+  background: var(--color-void);
+  color: var(--color-bone-white);
+  font-family: var(--font-display);
+  font-feature-settings: 'ss01' on;
+  padding: 0;
+}
+
+/* The void is the design: no panel, no card, no border anywhere. */
+.slide-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--color-void);
+  overflow: hidden;
+}
+
+.frame {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  padding: 0 var(--frame-inset);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ---------------------------------------------------------------- chrome */
+
+.chrome,
+.foot {
+  position: absolute;
+  left: var(--frame-inset);
+  right: var(--frame-inset);
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.35px;
+  text-transform: uppercase;
+  color: var(--color-ash-gray);
+}
+
+.chrome { top: 54px; }
+.foot { bottom: 54px; }
+.foot .title { color: var(--color-silver-mist); }
+
+/* ---------------------------------------------------------------- type */
+
+.kicker {
+  font-size: var(--text-nav-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-nav-label);
+  text-transform: uppercase;
+  color: var(--color-saffron-spark);
+  margin-bottom: var(--spacing-24);
+}
+
+/*
+ * Scoped under .slide-shell on purpose. The theme styles headings by element
+ * (.slidev-layout h2), which outranks a bare single-class token and silently
+ * collapsed every headline to the theme's own size.
+ */
+.slide-shell .t-display,
+.slide-shell .t-lg,
+.slide-shell .t-md,
+.slide-shell .t-sm,
+.slide-shell .t-sub,
+.slide-shell .t-xs {
+  font-weight: var(--font-weight-regular);
+  color: var(--color-bone-white);
+  margin: 0;
+}
+
+.slide-shell .t-display   { font-size: var(--text-display);     line-height: 1.1; letter-spacing: var(--tracking-display); }
+.slide-shell .t-lg      { font-size: var(--text-heading-lg);  line-height: 1.1; letter-spacing: var(--tracking-heading-lg); }
+.slide-shell .t-md         { font-size: var(--text-heading);     line-height: 1.1; letter-spacing: var(--tracking-heading); }
+.slide-shell .t-sm      { font-size: var(--text-heading-sm);  line-height: 1.2; letter-spacing: var(--tracking-heading); }
+.slide-shell .t-sub{ font-size: var(--text-subheading);  line-height: 1.2; }
+.slide-shell .t-xs      { font-size: var(--text-heading-xs);  line-height: 1.0; }
+
+/* Ultra-light body is the signature. Never set this to 400. */
+.slide-shell .body {
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-extralight);
+  line-height: 1.5;
+  color: var(--color-bone-white);
+  max-width: 720px;
+}
+.slide-shell .body.muted { color: var(--color-silver-mist); }
+.slide-shell .body + .body { margin-top: var(--spacing-24); }
+
+.caption {
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-extralight);
+  line-height: 1.5;
+  color: var(--color-ash-gray);
+}
+
+.accent { color: var(--color-electric-iris); }
+.spark  { color: var(--color-saffron-spark); }
+.dim    { color: var(--color-ash-gray); }
+.mist   { color: var(--color-silver-mist); }
+
+/* ---------------------------------------------------------------- layout */
+
+.split {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: var(--spacing-96);
+  align-items: center;
+  height: 100%;
+}
+.split.even  { grid-template-columns: 1fr 1fr; }
+.split.wide  { grid-template-columns: 1.4fr 0.6fr; }
+.split.right { grid-template-columns: 0.95fr 1.05fr; }
+
+.stack   { display: flex; flex-direction: column; gap: var(--spacing-24); }
+.stack.tight { gap: var(--spacing-12); }
+.stack.loose { gap: var(--spacing-60); }
+
+.meta-row {
+  display: flex;
+  gap: var(--spacing-36);
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.35px;
+  text-transform: uppercase;
+  color: var(--color-ash-gray);
+}
+
+/* ---------------------------------------------------------------- pill */
+
+.pill {
+  display: inline-block;
+  background: var(--color-electric-iris);
+  color: var(--color-bone-white);
+  border-radius: var(--radius-full);
+  padding: 22px 24px;
+  font-size: var(--text-nav-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.525px;
+  text-transform: uppercase;
+}
+
+/*
+ * Code and diagrams are extensions: the source spec covers a marketing site and
+ * defines neither. They honour the no-container rule, so hierarchy comes from
+ * color and whitespace rather than from a panel, a border, or a fill.
+ */
+.code {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--color-ash-gray);
+  white-space: pre;
+}
+.code.sm { font-size: 21px; line-height: 1.6; }
+.code.lg { font-size: 32px; line-height: 1.55; }
+.code .hi   { color: var(--color-bone-white); }
+.code .vio  { color: var(--color-electric-iris); }
+.code .amb  { color: var(--color-saffron-spark); }
+.code .tea  { color: var(--color-deep-verdant); }
+.code .off  { color: #3a3a3a; }
+
+/* A rule, not a border: one hairline used only to mark a lane or a cut. */
+.rule {
+  height: 1px;
+  background: #1e1e1e;
+  border: 0;
+  margin: var(--spacing-24) 0;
+}
+.rule.violet { background: var(--color-electric-iris); }
+.rule.amber  { background: var(--color-saffron-spark); }
+
+/* Numbered list without bullets or containers. */
+.numbered { display: flex; flex-direction: column; gap: var(--spacing-24); }
+.numbered .row { display: grid; grid-template-columns: 72px 1fr; align-items: start; gap: var(--spacing-18); }
+.numbered .n {
+  font-size: var(--text-heading-2xs);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-electric-iris);
+  letter-spacing: var(--tracking-heading-2xs);
+}
+.numbered .t { font-size: var(--text-heading-2xs); font-weight: var(--font-weight-regular); line-height: 1.25; }
+.numbered .d { font-size: 21px; font-weight: var(--font-weight-extralight); color: var(--color-ash-gray); margin-top: 6px; }
+
+/* Ratio bar for the 30/70 slide. No border, pure fills. */
+.ratio { display: flex; width: 100%; height: 18px; gap: 6px; }
+.ratio span { display: block; height: 100%; border-radius: var(--radius-full); }
+
+.stat { display: flex; flex-direction: column; gap: 6px; }
+.stat .v { font-size: var(--text-heading-lg); font-weight: var(--font-weight-regular); letter-spacing: var(--tracking-heading-lg); line-height: 1; }
+.stat .l { font-size: var(--text-caption); font-weight: var(--font-weight-semibold); letter-spacing: 0.35px; text-transform: uppercase; color: var(--color-ash-gray); }
+
+.cols-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-60); }
+.cols-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-60); }
+
+/* Slidev default overrides so nothing reintroduces a surface. */
+.slidev-layout h1, .slidev-layout h2, .slidev-layout p { margin: 0; }
+.slidev-layout pre, .slidev-layout code { background: transparent !important; }

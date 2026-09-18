@@ -1,0 +1,19 @@
+{
+  "name": "ai-factories-slides",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "slidev --open",
+    "build": "slidev build",
+    "export": "slidev export"
+  },
+  "dependencies": {
+    "@iconify-json/lucide": "^1.2.27",
+    "@slidev/cli": "^52.14.1",
+    "@slidev/theme-default": "latest",
+    "vue": "^3.5.29"
+  },
+  "devDependencies": {
+    "playwright-chromium": "^1.63.0"
+  }
+}
