@@ -87,7 +87,9 @@ Two-column asymmetric `.split` (1.05fr / 0.95fr). Oversized left-aligned headlin
 ### Particle field
 `<ParticleField variant="cloud|ambient|lanes" :opacity="n" :cx="0..1" :cy="0..1" />`. Canvas 2D, outlined 1px triangles in the full chromatic spectrum.
 
-`cloud` is the hero treatment: a dense circle that opens as a tight disc and slowly scatters outward on an ease-out curve over 30 seconds, then settles and stops. It defaults to `cx: 0.73`, sitting in the right half of the frame so it balances a left-aligned headline without crowding it. Landing on a hero slide replays the bloom, which is why it is worth having on the title, the thesis statement, and the close. Spread is capped at 1.3: past roughly 1.4 the field stops reading as a cloud placed beside the headline and becomes a full-bleed wash that clips at the canvas edges. `ambient` is a sparse background field. `lanes` groups particles into three horizontal bands, used once, for the three-lanes spread. Never introduce photography or screenshots into a slide carrying a cloud.
+**The field appears on the cover slide only.** It is the deck's opening gesture, not a background texture. Everywhere else the void does the work on its own, which is the whole premise of the system: a slide earns attention through type and whitespace, and a drifting field behind body copy competes with the words instead of supporting them.
+
+`cloud` is that cover treatment: a dense circle that opens as a tight disc and slowly scatters outward on an ease-out curve over 30 seconds, then settles and stops. It defaults to `cx: 0.73`, sitting in the right half of the frame so it balances the left-aligned title without crowding it. Spread is capped at 1.3: past roughly 1.4 the field stops reading as a cloud placed beside the headline and becomes a full-bleed wash that clips at the canvas edges. `ambient` is a sparse background field. `lanes` groups particles into three horizontal bands, used once, for the three-lanes spread. Never introduce photography or screenshots into a slide carrying a cloud.
 
 **Performance rules, and they are not optional.** A full-bleed canvas repainting every frame costs a 1920x1080 layer repaint plus a GPU texture upload, and Slidev keeps neighbouring slides mounted, so a naive version runs several of those at once for slides nobody is looking at. That spins a laptop fan, on stage, for a background decoration. Five rules keep it cheap:
 
@@ -123,7 +125,7 @@ The single filled violet element in the whole deck. Reserved for a genuine call 
 - Keep body copy at weight 200. The ultra-light body is the signature.
 - Reserve `--color-electric-iris` for accent words, numerals, and structure in code.
 - Use `--color-saffron-spark` for the kicker and for the single line on a slide that carries the point.
-- Let the particle field be the only imagery.
+- Let the particle field be the only imagery, and keep it on the cover alone.
 - Keep one idea per slide. Two at the absolute most.
 
 ### Don't
@@ -136,6 +138,7 @@ The single filled violet element in the whole deck. Reserved for a genuine call 
 - Do not add a class whose name collides with a UnoCSS utility namespace.
 - Do not add a continuously animating full-bleed layer. Check the particle field's performance rules before animating anything.
 - Do not put preformatted text in anything but a `<pre>`. Vue condenses whitespace everywhere else.
+- Do not add the particle field to a content slide. It belongs to the cover.
 
 ## Elevation
 
@@ -147,7 +150,7 @@ Entirely procedural and abstract. The particle constellation is the visual brand
 
 ## Layout
 
-Full-bleed void, 144px frame inset, content centered vertically. Most slides are a two-column asymmetric split; hero slides are a single left-aligned block with a particle cloud behind. Section gaps are generous. Density is deliberately low: one or two elements per viewport, never information-dense. The only exception is the twelve-invariant reference slide, which is dense on purpose because the audience is meant to photograph it.
+Full-bleed void, 144px frame inset, content centered vertically. Most slides are a two-column asymmetric split; statement slides are a single left-aligned block on bare void. Section gaps are generous. Density is deliberately low: one or two elements per viewport, never information-dense. The only exception is the twelve-invariant reference slide, which is dense on purpose because the audience is meant to photograph it.
 
 ## Quick Start
 

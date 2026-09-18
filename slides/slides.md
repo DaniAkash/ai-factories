@@ -49,7 +49,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="ambient" :opacity="0.45" />
   <div class="chrome"><div>Speaker</div><ChromeCounter /></div>
   <div class="frame">
     <div class="split">
@@ -88,7 +87,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="ambient" :opacity="0.35" />
   <div class="chrome"><div>Demo</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1320px">
@@ -111,7 +109,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="ambient" :opacity="0.35" />
   <div class="chrome"><div>Demo</div><ChromeCounter /></div>
   <div class="frame">
     <div class="split">
@@ -139,7 +136,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="ambient" :opacity="0.3" />
   <div class="chrome"><div>The pattern</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1500px">
@@ -192,7 +188,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="ambient" :opacity="0.4" />
   <div class="chrome"><div>Evidence</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1320px">
@@ -284,7 +279,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="cloud" :opacity="0.55" />
   <div class="chrome"><div>The pattern</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1400px">
@@ -353,7 +347,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="lanes" :opacity="0.5" />
   <div class="chrome"><div>Three lanes</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1400px">
@@ -444,7 +437,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="cloud" :opacity="0.5" />
   <div class="chrome"><div>Three lanes</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1560px">
@@ -482,7 +474,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="ambient" :opacity="0.4" />
   <div class="chrome"><div>Anatomy</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1400px">
@@ -871,7 +862,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="ambient" :opacity="0.4" />
   <div class="chrome"><div>Running it yourself</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1400px">
@@ -954,7 +944,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="cloud" :opacity="0.7" />
   <div class="chrome"><div>Aalai</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1400px">
@@ -1013,7 +1002,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="ambient" :opacity="0.35" />
   <div class="chrome"><div>Running it yourself</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1560px">
@@ -1081,7 +1069,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="cloud" :opacity="0.5" />
   <div class="chrome"><div>Field notes</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1500px">
@@ -1154,7 +1141,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="ambient" :opacity="0.4" />
   <div class="chrome"><div>Field notes</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1500px">
@@ -1233,7 +1219,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="ambient" :opacity="0.35" />
   <div class="chrome"><div>The result</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1400px">
@@ -1294,7 +1279,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="cloud" :opacity="0.65" />
   <div class="chrome"><div>Closing</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1560px">
@@ -1331,7 +1315,6 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <ParticleField variant="cloud" :opacity="0.85" />
   <div class="chrome"><div>Thank you</div><ChromeCounter /></div>
   <div class="frame">
     <div class="split">
