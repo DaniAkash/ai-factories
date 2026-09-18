@@ -375,7 +375,6 @@ class: 'dark'
       <div>
         <p class="body">The agent edits files. The factory owns every git write and every GitHub operation.</p>
         <p class="body muted">It works in a disposable worktree. Delivery happens outside the agent turn, gated on a real diff.</p>
-        <p class="body accent" style="margin-top:36px">Let's watch one run.</p>
       </div>
     </div>
   </div>
@@ -386,6 +385,34 @@ class: 'dark'
 Hand off to the demo here. Fifteen minutes. Return at slide 17.
 Hard checkpoint at 12 minutes into the demo: if behind, drop the empty-run
 beat first, then the eval beat. Never cut into slides 17 to 22.
+-->
+
+---
+class: 'dark'
+---
+
+<div class="slide-shell">
+  <div class="chrome"><div>One run</div><ChromeCounter /></div>
+  <div class="frame">
+    <div>
+      <div class="kicker">ONE ISSUE, END TO END</div>
+      <pre class="code" style="margin-top:36px"><span class="hi">poll</span>       <span class="off">every 60 seconds, through the gh CLI</span>
+<span class="hi">screen</span>     <span class="amb">the trust gate: who opened this issue?</span>
+<span class="hi">claim</span>      <span class="off">sqlite, so a double tick is harmless</span>
+<span class="hi">worktree</span>   <span class="off">a clean checkout, thrown away afterwards</span>
+<span class="vio">agent</span>      <span class="hi">edits files. runs no git. holds no token.</span>
+<span class="hi">verify</span>     <span class="amb">no diff, no pull request</span>
+<span class="hi">deliver</span>    <span class="off">the factory commits, pushes, opens a draft</span></pre>
+    </div>
+  </div>
+  <div class="foot"><div class="title">AI Factories</div><div>One run</div></div>
+</div>
+
+<!--
+This slide stays up while you switch to the terminal, and it is the one you
+come back to before advancing. Fifteen minutes. Hard checkpoint at twelve:
+if behind, drop the empty-run beat first, then the eval beat. Never cut into
+the field notes or the close.
 -->
 
 ---
