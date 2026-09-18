@@ -108,6 +108,10 @@ Animation also respects `prefers-reduced-motion`, falling back to a single stati
 ### Code and diagram block
 `.code` (`.sm` / `.lg` variants). An extension. Monospace text directly on the void with `white-space: pre`, colored by role rather than contained. **Hierarchy comes from color, never from a panel.** There is no terminal chrome, no window frame, no background fill, no border.
 
+**It must be a `<pre>`, never a `<div>`.** Slides compile to a Vue component, and Vue's template compiler condenses whitespace in ordinary elements: every newline and run of spaces becomes a single space. A code block in a `<div>` therefore renders as one long line that overflows the slide and, inside a grid, squeezes its sibling column down to one word per line. Vue special-cases `<pre>` and preserves its whitespace. `white-space: pre` in CSS does not save you, because by the time CSS runs the newlines are already gone.
+
+A blank line inside the block still has to be written as a line containing `&nbsp;`. Markdown ends an HTML block at the first blank line, so a genuinely empty line closes the element early.
+
 ### Pill button
 The single filled violet element in the whole deck. Reserved for a genuine call to action; currently unused on any content slide.
 
@@ -131,6 +135,7 @@ The single filled violet element in the whole deck. Reserved for a genuine call 
 - Do not write copy that refers to the talk itself. The slide carries the content; the speaker carries the narration.
 - Do not add a class whose name collides with a UnoCSS utility namespace.
 - Do not add a continuously animating full-bleed layer. Check the particle field's performance rules before animating anything.
+- Do not put preformatted text in anything but a `<pre>`. Vue condenses whitespace everywhere else.
 
 ## Elevation
 

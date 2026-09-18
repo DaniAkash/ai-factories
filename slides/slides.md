@@ -117,16 +117,16 @@ class: 'dark'
     <div class="split">
       <div>
         <div class="kicker">THE LINE STARTS</div>
-        <h2 class="t-md">That is running.<br/>We come back<br/>to it at the end.</h2>
+        <h2 class="t-md">The line<br/>is running.</h2>
         <p class="body" style="margin-top:36px">An agent now has the issue, a clean checkout of the repository, and no ability to push anything.</p>
       </div>
       <div>
-        <div class="code sm"><span class="vio">$</span> <span class="hi">aalai run &lt;repo&gt; &lt;issue&gt;</span>
+        <pre class="code sm"><span class="vio">$</span> <span class="hi">aalai run &lt;repo&gt; &lt;issue&gt;</span>
 &nbsp;
 <span class="off">pipeline </span>  run starting
 <span class="off">workspace</span>  worktree ready
 <span class="off">pipeline </span>  conventions detected
-<span class="off">agent    </span>  <span class="amb">working…</span></div>
+<span class="off">agent    </span>  <span class="amb">working…</span></pre>
       </div>
     </div>
   </div>
@@ -159,7 +159,7 @@ class: 'dark'
   <div class="frame">
     <div>
       <div class="kicker">THE DIAGRAM EVERYONE DRAWS</div>
-      <div class="code lg" style="margin-top:45px">issue <span class="off">──▶</span> <span class="hi">classify</span> <span class="off">──▶</span> <span class="hi">analyze</span> <span class="off">──▶</span> <span class="hi">implement</span> <span class="off">──▶</span> <span class="hi">review</span> <span class="off">──▶</span> <span class="amb">human merge</span></div>
+      <pre class="code lg" style="margin-top:45px">issue <span class="off">──▶</span> <span class="hi">classify</span> <span class="off">──▶</span> <span class="hi">analyze</span> <span class="off">──▶</span> <span class="hi">implement</span> <span class="off">──▶</span> <span class="hi">review</span> <span class="off">──▶</span> <span class="amb">human merge</span></pre>
       <p class="body" style="margin-top:60px">This diagram is accurate. It is also about a third of what a working factory contains.</p>
     </div>
   </div>
@@ -261,13 +261,13 @@ class: 'dark'
       <h2 class="t-sm">A filesystem-first agent framework,<br/>and an open factory built on top of it.</h2>
       <div class="cols-2" style="margin-top:60px">
         <div>
-          <div class="code sm"><span class="vio">agent/</span>
+          <pre class="code sm"><span class="vio">agent/</span>
   agent.ts          <span class="off">model, budget</span>
   instructions.ts   <span class="amb">the pipeline</span>
   channels/         <span class="off">how work arrives</span>
   subagents/        <span class="off">the stations</span>
   tools/            <span class="off">one per file</span>
-  lib/              <span class="off">trust, models, policy</span></div>
+  lib/              <span class="off">trust, models, policy</span></pre>
         </div>
         <div>
           <p class="body muted">Capabilities are discovered from file structure. A directory named <span class="mist">implementer</span> becomes the station called implementer. There is no registry to keep in sync.</p>
@@ -308,17 +308,17 @@ class: 'dark'
       <div class="kicker">READING THE SOURCE</div>
       <h2 class="t-sm">The pipeline is one prompt file<br/>and five thin definitions.</h2>
       <div class="cols-2" style="margin-top:60px">
-        <div class="code sm"><span class="amb">instructions.ts</span>      <span class="hi">91 lines</span>
+        <pre class="code sm"><span class="amb">instructions.ts</span>      <span class="hi">91 lines</span>
 <span class="off">subagents/classifier  ~15 lines of config</span>
 <span class="off">subagents/analyst     ~15 lines of config</span>
 <span class="off">subagents/implementer ~15 lines of config</span>
-<span class="off">subagents/reviewer    ~15 lines of config</span></div>
-        <div class="code sm"><span class="vio">lib/trust.ts</span>          <span class="hi">the trust authority</span>
+<span class="off">subagents/reviewer    ~15 lines of config</span></pre>
+        <pre class="code sm"><span class="vio">lib/trust.ts</span>          <span class="hi">the trust authority</span>
 <span class="vio">lib/github/approval.ts</span> <span class="hi">every policy</span>
 <span class="vio">channels/github.ts</span>     <span class="hi">dispatch gates</span>
 <span class="vio">lib/blob.ts</span>            <span class="hi">namespace registry</span>
 <span class="vio">lib/artifacts/</span>         <span class="hi">handoff contracts</span>
-<span class="vio">evals/</span>                 <span class="hi">the failure taxonomy</span></div>
+<span class="vio">evals/</span>                 <span class="hi">the failure taxonomy</span></pre>
       </div>
     </div>
   </div>
@@ -378,7 +378,7 @@ class: 'dark'
         <p class="body" style="margin-top:36px">Five stations, each with a machine-checkable output schema. Issue in, branch out.</p>
         <p class="body muted">This is the easy part. Genuinely, a weekend.</p>
       </div>
-      <div class="code sm"><span class="hi">classify</span>
+      <pre class="code sm"><span class="hi">classify</span>
    <span class="off">↓ type, priority, actionable?</span>
 <span class="hi">analyze</span>
    <span class="off">↓ plan +</span> <span class="amb">acceptance criteria</span>
@@ -386,7 +386,7 @@ class: 'dark'
    <span class="off">↓ branch + verification log</span>
 <span class="hi">review</span>
    <span class="off">↓ verdict + per-criterion evidence</span>
-<span class="amb">human</span></div>
+<span class="amb">human</span></pre>
     </div>
   </div>
   <div class="foot"><div class="title">AI Factories</div><div>Three lanes</div></div>
@@ -428,12 +428,12 @@ class: 'dark'
         <h2 class="h spark">The memory.</h2>
         <p class="body" style="margin-top:36px">What survives the run. Who is allowed to write into it. How one station hands another a twenty page document without pushing it through the orchestrator.</p>
       </div>
-      <div class="code sm"><span class="amb">factory-brain/</span>  <span class="off">durable repo notes</span>
+      <pre class="code sm"><span class="amb">factory-brain/</span>  <span class="off">durable repo notes</span>
    <span class="off">read by every run</span>
    <span class="hi">written only by trusted callers</span>
 &nbsp;
 <span class="amb">artifacts/</span>      <span class="off">station handoffs, by id</span>
-<span class="amb">user-prefs/</span>     <span class="off">keyed on the principal</span></div>
+<span class="amb">user-prefs/</span>     <span class="off">keyed on the principal</span></pre>
     </div>
   </div>
   <div class="foot"><div class="title">AI Factories</div><div>Three lanes</div></div>
@@ -507,7 +507,7 @@ class: 'dark'
         <h2 class="t-md">The schema<br/>is the interface.</h2>
         <p class="body" style="margin-top:36px">Every station returns structured output, not prose. That single field turns a conversation into a contract you can check.</p>
       </div>
-      <div class="code sm"><span class="off">analyst returns</span>
+      <pre class="code sm"><span class="off">analyst returns</span>
   problem_statement
   approach
   plan[]
@@ -516,7 +516,7 @@ class: 'dark'
   <span class="amb">acceptance_criteria[]</span>
   test_strategy
   assumptions[]
-  open_questions[]</div>
+  open_questions[]</pre>
     </div>
   </div>
   <div class="foot"><div class="title">AI Factories</div><div>Anatomy</div></div>
@@ -590,7 +590,7 @@ class: 'dark'
         <h2 class="t-md">Trust is decided<br/>once, at the door.</h2>
         <p class="body" style="margin-top:36px">From a signed webhook or an authenticated API response. Never re-derived downstream from anything the model can read.</p>
       </div>
-      <div class="code sm"><span class="off">at dispatch:</span>
+      <pre class="code sm"><span class="off">at dispatch:</span>
   comment author is
   OWNER / MEMBER / COLLABORATOR
         <span class="off">↓</span>
@@ -599,7 +599,7 @@ class: 'dark'
 <span class="off">label applied by a maintainer:</span>
   <span class="hi">stampAutonomous(auth, issue)</span>
   <span class="off">principal is rewritten. the run
-  never executes as the labeler.</span></div>
+  never executes as the labeler.</span></pre>
     </div>
   </div>
   <div class="foot"><div class="title">AI Factories</div><div>Anatomy</div></div>
@@ -660,7 +660,7 @@ class: 'dark'
         <div class="kicker">THE HUMAN GATE</div>
         <h2 class="t-md">Merge is not<br/>guarded.<br/><span class="accent">It is absent.</span></h2>
       </div>
-      <div class="code sm"><span class="off">github extension, include: [</span>
+      <pre class="code sm"><span class="off">github extension, include: [</span>
   getRepository, getFileContent,
   searchCode, listIssues,
   createIssue, addIssueComment,
@@ -668,7 +668,7 @@ class: 'dark'
   <span class="off">… 31 tools total</span>
 <span class="off">]</span>
 &nbsp;
-<span class="hi">mergePullRequest</span>  <span class="amb">← not in the list</span></div>
+<span class="hi">mergePullRequest</span>  <span class="amb">← not in the list</span></pre>
     </div>
   </div>
   <div class="foot"><div class="title">AI Factories</div><div>Anatomy</div></div>
@@ -769,7 +769,7 @@ class: 'dark'
         <h2 class="t-sm">Long documents move<br/>by id, never through<br/>the orchestrator.</h2>
         <p class="body" style="margin-top:36px">This is the mechanism that keeps a five station pipeline inside a context budget.</p>
       </div>
-      <div class="code sm"><span class="off">analyst  →</span> save_artifact
+      <pre class="code sm"><span class="off">analyst  →</span> save_artifact
             <span class="hi">analysis-dedupe-x9f2k</span>
 &nbsp;
 <span class="off">orchestrator relays the id only</span>
@@ -778,7 +778,7 @@ class: 'dark'
 <span class="off">reviewer    →</span> read_artifact
 &nbsp;
 <span class="amb">"Never paste an artifact's contents
-into a station message."</span></div>
+into a station message."</span></pre>
     </div>
   </div>
   <div class="foot"><div class="title">AI Factories</div><div>Anatomy</div></div>
@@ -797,9 +797,9 @@ class: 'dark'
         <h2 class="t-sm">The artifact id is<br/>supplied by a model.</h2>
       </div>
       <div>
-        <div class="code sm"><span class="hi">/^[a-z0-9]+(?:-[a-z0-9]+)*$/</span>
+        <pre class="code sm"><span class="hi">/^[a-z0-9]+(?:-[a-z0-9]+)*$/</span>
 &nbsp;
-<span class="off">anchored. no dots. no slashes.</span></div>
+<span class="off">anchored. no dots. no slashes.</span></pre>
         <p class="body" style="margin-top:36px">Without that, a station could pass <span class="mist">../factory-brain/&lt;hash&gt;.md</span> and read a managed document through a tool never meant to reach one.</p>
       </div>
     </div>
@@ -820,7 +820,7 @@ class: 'dark'
         <h2 class="t-md">The directory<br/>structure is the<br/>failure taxonomy.</h2>
         <p class="body" style="margin-top:36px">Assert on the trace, not on the prose. The judge model is for the fuzzy tail only.</p>
       </div>
-      <div class="code sm"><span class="vio">evals/</span>
+      <pre class="code sm"><span class="vio">evals/</span>
   <span class="hi">routing/</span>   <span class="off">right station?</span>
     classifier-first
     needs-clarification
@@ -830,7 +830,7 @@ class: 'dark'
     ship-gate-parks
   <span class="hi">pipeline/</span>  <span class="off">end to end</span>
 &nbsp;
-<span class="amb">t.calledSubagent('implementer', { count: 0 })</span></div>
+<span class="amb">t.calledSubagent('implementer', { count: 0 })</span></pre>
     </div>
   </div>
   <div class="foot"><div class="title">AI Factories</div><div>Anatomy</div></div>
@@ -847,18 +847,18 @@ class: 'dark'
       <div class="kicker">REFERENCE</div>
       <h2 class="t-sm" style="margin-bottom:45px">Twelve invariants worth stealing.</h2>
       <div class="cols-2" style="gap:90px">
-        <div class="code sm"><span class="vio">01</span> <span class="hi">Trust decided once, at the door</span>
+        <pre class="code sm"><span class="vio">01</span> <span class="hi">Trust decided once, at the door</span>
 <span class="vio">02</span> <span class="hi">Delete the capability, don't guard it</span>
 <span class="vio">03</span> <span class="hi">Inert by construction</span>
 <span class="vio">04</span> <span class="hi">Criteria before code, verbatim to review</span>
 <span class="vio">05</span> <span class="hi">Untrusted input never writes memory</span>
-<span class="vio">06</span> <span class="hi">Bound every loop, durably</span></div>
-        <div class="code sm"><span class="vio">07</span> <span class="hi">Stations inherit nothing</span>
+<span class="vio">06</span> <span class="hi">Bound every loop, durably</span></pre>
+        <pre class="code sm"><span class="vio">07</span> <span class="hi">Stations inherit nothing</span>
 <span class="vio">08</span> <span class="hi">Independence is mechanical</span>
 <span class="vio">09</span> <span class="hi">Evidence, not checkmarks</span>
 <span class="vio">10</span> <span class="hi">Long docs move by id</span>
 <span class="vio">11</span> <span class="hi">Centralise what must see everything</span>
-<span class="vio">12</span> <span class="hi">Assert on the trace, not the prose</span></div>
+<span class="vio">12</span> <span class="hi">Assert on the trace, not the prose</span></pre>
       </div>
     </div>
   </div>
@@ -913,14 +913,14 @@ class: 'dark'
   <div class="frame">
     <div>
       <div class="kicker">CLOUD PRIMITIVE → WHAT YOU RUN INSTEAD</div>
-      <div class="code" style="margin-top:45px"><span class="off">Functions        ──▶</span>  <span class="hi">a long-lived process under launchd</span>
+      <pre class="code" style="margin-top:45px"><span class="off">Functions        ──▶</span>  <span class="hi">a long-lived process under launchd</span>
 <span class="off">Durable workflow ──▶</span>  <span class="hi">workflow state on disk</span>
 <span class="off">Hosted sandbox   ──▶</span>  <span class="hi">local micro VMs, or a git worktree</span>
 <span class="off">Blob storage     ──▶</span>  <span class="hi">the filesystem, same guards</span>
 <span class="off">Model gateway    ──▶</span>  <span class="vio">any ACP agent as a model</span>
 <span class="off">Credential broker──▶</span>  <span class="hi">the CLI you are already signed into</span>
 <span class="off">Cron             ──▶</span>  <span class="hi">launchd</span>
-<span class="off">Webhooks         ──▶</span>  <span class="amb">← the one real gap</span></div>
+<span class="off">Webhooks         ──▶</span>  <span class="amb">← the one real gap</span></pre>
     </div>
   </div>
   <div class="foot"><div class="title">AI Factories</div><div>Running it yourself</div></div>
@@ -976,10 +976,10 @@ class: 'dark'
   <div class="frame">
     <div>
       <div class="kicker">THE WHOLE THING, ONE LINE</div>
-      <div class="code" style="margin-top:45px"><span class="hi">poll</span> <span class="off">──▶</span> <span class="hi">screen</span> <span class="off">──▶</span> <span class="hi">claim</span> <span class="off">──▶</span> <span class="hi">worktree</span> <span class="off">──▶</span> <span class="vio">agent</span> <span class="off">──▶</span> <span class="hi">verify diff</span> <span class="off">──▶</span> <span class="hi">commit + push</span> <span class="off">──▶</span> <span class="amb">draft PR</span>
+      <pre class="code" style="margin-top:45px"><span class="hi">poll</span> <span class="off">──▶</span> <span class="hi">screen</span> <span class="off">──▶</span> <span class="hi">claim</span> <span class="off">──▶</span> <span class="hi">worktree</span> <span class="off">──▶</span> <span class="vio">agent</span> <span class="off">──▶</span> <span class="hi">verify diff</span> <span class="off">──▶</span> <span class="hi">commit + push</span> <span class="off">──▶</span> <span class="amb">draft PR</span>
                 <span class="off">(sqlite)</span>            <span class="off">(cwd)</span>       <span class="off">▲</span>                   <span class="off">▲</span>
                                                 <span class="off">│</span>                   <span class="off">│</span>
-                                <span class="amb">no credentials reach the agent ────┘</span></div>
+                                <span class="amb">no credentials reach the agent ────┘</span></pre>
       <p class="body" style="margin-top:60px">That last line turned out to be an overclaim. More on it later.</p>
     </div>
   </div>
@@ -1038,7 +1038,7 @@ class: 'dark'
         <p class="body" style="margin-top:36px">Different harness. Different tools. Different context assembly. Different system prompt written by a different company.</p>
         <p class="body spark">They disagree about far more than weights.</p>
       </div>
-      <div class="code sm"><span class="off">createAcpxProvider({</span>
+      <pre class="code sm"><span class="off">createAcpxProvider({</span>
   agent: <span class="hi">'codex'</span>,
   cwd: worktree,
   sessionMode: <span class="hi">'oneshot'</span>,
@@ -1048,7 +1048,7 @@ class: 'dark'
 &nbsp;
 <span class="off">any ACP agent, one interface:</span>
 <span class="vio">claude · codex · gemini · copilot
-cursor · opencode · qwen · …</span></div>
+cursor · opencode · qwen · …</span></pre>
     </div>
   </div>
   <div class="foot"><div class="title">AI Factories</div><div>Running it yourself</div></div>

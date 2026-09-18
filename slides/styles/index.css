@@ -178,6 +178,16 @@
   align-items: center;
   height: 100%;
 }
+/*
+ * Grid and flex children default to min-width:auto, so a child wider than its
+ * track pushes into its sibling instead of overflowing. Without this an
+ * over-wide code block collapses the headline column to a single word per line.
+ */
+.split > *,
+.cols-2 > *,
+.cols-3 > * {
+  min-width: 0;
+}
 .split.even  { grid-template-columns: 1fr 1fr; }
 .split.wide  { grid-template-columns: 1.4fr 0.6fr; }
 .split.right { grid-template-columns: 0.95fr 1.05fr; }
@@ -215,21 +225,25 @@
  * defines neither. They honour the no-container rule, so hierarchy comes from
  * color and whitespace rather than from a panel, a border, or a fill.
  */
-.code {
+.slide-shell .code {
   font-family: var(--font-mono);
   font-size: 26px;
   font-weight: 400;
   line-height: 1.65;
   color: var(--color-ash-gray);
   white-space: pre;
+  margin: 0;
+  padding: 0;
+  background: none;
+  overflow: visible;
 }
-.code.sm { font-size: 21px; line-height: 1.6; }
-.code.lg { font-size: 32px; line-height: 1.55; }
-.code .hi   { color: var(--color-bone-white); }
-.code .vio  { color: var(--color-electric-iris); }
-.code .amb  { color: var(--color-saffron-spark); }
-.code .tea  { color: var(--color-deep-verdant); }
-.code .off  { color: #3a3a3a; }
+.slide-shell .code.sm { font-size: 21px; line-height: 1.6; }
+.slide-shell .code.lg { font-size: 32px; line-height: 1.55; }
+.slide-shell .code .hi   { color: var(--color-bone-white); }
+.slide-shell .code .vio  { color: var(--color-electric-iris); }
+.slide-shell .code .amb  { color: var(--color-saffron-spark); }
+.slide-shell .code .tea  { color: var(--color-deep-verdant); }
+.slide-shell .code .off  { color: #3a3a3a; }
 
 /* A rule, not a border: one hairline used only to mark a lane or a cut. */
 .rule {
