@@ -3,19 +3,27 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 /**
  * The deck's signature visual: a field of tiny outlined triangles in the brand's
- * chromatic spectrum, drifting slowly against the void.
+ * chromatic spectrum, against the void.
  *
- * Canvas 2D rather than WebGL. The field is thousands of 1px strokes with no
- * shading, no blending, and no camera, so a shader would add a dependency and a
- * compile step to draw something the 2D context already draws cheaply.
+ * Performance is the whole design of this component. A full-bleed canvas
+ * repainting every frame costs a 1920x1080 layer repaint plus a GPU texture
+ * upload, and Slidev keeps neighbouring slides mounted, so a naive version runs
+ * several of those at once including for slides nobody is looking at. Three
+ * rules keep it cheap:
+ *
+ * 1. Only `cloud` animates. `ambient` and `lanes` paint a single frame and stop,
+ *    because a sparse field drifting at 0.1px per frame is not perceptible in a
+ *    talk and does not justify a permanent repaint.
+ * 2. Animation pauses whenever the canvas is off screen, which covers both the
+ *    slides Slidev keeps mounted either side of the current one and a
+ *    backgrounded tab.
+ * 3. Strokes are batched per colour bucket, so a frame issues a couple of dozen
+ *    stroke calls instead of one per particle.
  */
 const props = withDefaults(
   defineProps<{
-    /** cloud: dense organic cluster. ambient: sparse drift. lanes: three bands. */
     variant?: 'cloud' | 'ambient' | 'lanes'
-    /** Multiplier on the variant's base particle count. */
     density?: number
-    /** Overall opacity of the whole field. */
     opacity?: number
   }>(),
   { variant: 'ambient', density: 1, opacity: 1 },
@@ -23,46 +31,56 @@ const props = withDefaults(
 
 const canvas = ref<HTMLCanvasElement | null>(null)
 let frame = 0
+let observer: IntersectionObserver | null = null
 
 const PALETTE = ['#8052ff', '#ffb829', '#15846e', '#b07cff', '#5b8dff', '#ff6bd6']
+
+/**
+ * The field is decoration, so it renders below CSS resolution and is scaled up.
+ * At a 1px stroke the difference is invisible and it cuts the painted pixel
+ * count by roughly two thirds.
+ */
+const RENDER_SCALE = 0.6
+
+/** Alpha is quantised so particles can share a stroke batch. */
+const ALPHA_STEPS = 4
 
 interface Particle {
   x: number
   y: number
   size: number
-  color: string
-  alpha: number
-  rotation: number
-  spin: number
   driftX: number
   driftY: number
 }
 
-/** Organic blob radius: a circle perturbed by two sine terms so the edge never reads as geometry. */
+type Bucket = { style: string; items: Particle[] }
+
 function blobRadius(angle: number, base: number): number {
   return base * (0.72 + 0.2 * Math.sin(angle * 3) + 0.12 * Math.sin(angle * 5 + 1.4))
 }
 
-function build(width: number, height: number): Particle[] {
-  const counts = { cloud: 2200, ambient: 420, lanes: 1400 }
+function hexToRgba(hex: string, alpha: number): string {
+  const n = Number.parseInt(hex.slice(1), 16)
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`
+}
+
+function build(width: number, height: number): Bucket[] {
+  const counts = { cloud: 900, ambient: 220, lanes: 600 }
   const total = Math.round(counts[props.variant] * props.density)
-  const particles: Particle[] = []
+  const buckets = new Map<string, Bucket>()
 
   for (let i = 0; i < total; i += 1) {
     let x: number
     let y: number
 
     if (props.variant === 'cloud') {
-      // Concentrate toward the centre: sqrt on a uniform sample would spread
-      // evenly by area, so the exponent is raised to pull mass inward.
       const angle = Math.random() * Math.PI * 2
       const reach = Math.pow(Math.random(), 0.55)
       const radius = blobRadius(angle, Math.min(width, height) * 0.46) * reach
       x = width / 2 + Math.cos(angle) * radius
       y = height / 2 + Math.sin(angle) * radius * 0.86
     } else if (props.variant === 'lanes') {
-      const lane = i % 3
-      const laneCentre = height * (0.26 + lane * 0.24)
+      const laneCentre = height * (0.26 + (i % 3) * 0.24)
       x = Math.random() * width
       y = laneCentre + (Math.random() - 0.5) * height * 0.13
     } else {
@@ -70,20 +88,23 @@ function build(width: number, height: number): Particle[] {
       y = Math.random() * height
     }
 
+    const colour = PALETTE[Math.floor(Math.random() * PALETTE.length)] ?? '#8052ff'
     const edgeFade = props.variant === 'cloud' ? 1 : 0.55
-    particles.push({
+    const rawAlpha = (0.25 + Math.random() * 0.6) * edgeFade * props.opacity
+    const step = Math.max(1, Math.round(rawAlpha * ALPHA_STEPS))
+    const style = hexToRgba(colour, (step / ALPHA_STEPS) * 0.85)
+
+    const bucket = buckets.get(style) ?? { style, items: [] }
+    bucket.items.push({
       x,
       y,
       size: 3 + Math.random() * 6,
-      color: PALETTE[Math.floor(Math.random() * PALETTE.length)] ?? '#8052ff',
-      alpha: (0.25 + Math.random() * 0.6) * edgeFade,
-      rotation: Math.random() * Math.PI * 2,
-      spin: (Math.random() - 0.5) * 0.004,
       driftX: (Math.random() - 0.5) * 0.12,
       driftY: (Math.random() - 0.5) * 0.12,
     })
+    buckets.set(style, bucket)
   }
-  return particles
+  return [...buckets.values()]
 }
 
 onMounted(() => {
@@ -91,55 +112,107 @@ onMounted(() => {
   if (el === null) {
     return
   }
-  const ctx = el.getContext('2d')
+  const ctx = el.getContext('2d', { alpha: true })
   if (ctx === null) {
     return
   }
 
-  const dpr = Math.min(window.devicePixelRatio || 1, 2)
-  const width = el.clientWidth
-  const height = el.clientHeight
-  el.width = width * dpr
-  el.height = height * dpr
-  ctx.scale(dpr, dpr)
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const animated = props.variant === 'cloud' && !reduceMotion
+  const MIN_FRAME_MS = 1000 / 30
 
-  const particles = build(width, height)
+  let buckets: Bucket[] = []
+  let width = 0
+  let height = 0
+  let ready = false
+  let running = false
+  let last = 0
 
-  const draw = (): void => {
+  /**
+   * Sizing is deferred until the canvas is actually on screen. Slidev mounts
+   * neighbouring slides hidden, where clientWidth is 0, so measuring at mount
+   * would fix the backing store at 0x0 and the field would never paint.
+   */
+  const initialise = (): boolean => {
+    const cssWidth = el.clientWidth
+    const cssHeight = el.clientHeight
+    if (cssWidth === 0 || cssHeight === 0) {
+      return false
+    }
+    width = Math.round(cssWidth * RENDER_SCALE)
+    height = Math.round(cssHeight * RENDER_SCALE)
+    el.width = width
+    el.height = height
+    buckets = build(width, height)
+    ready = true
+    return true
+  }
+
+  const paint = (): void => {
     ctx.clearRect(0, 0, width, height)
     ctx.lineWidth = 1
-
-    for (const p of particles) {
-      p.x += p.driftX
-      p.y += p.driftY
-      p.rotation += p.spin
-
-      // Wrap rather than respawn, so density stays constant over a long talk.
-      if (p.x < -20) p.x = width + 20
-      if (p.x > width + 20) p.x = -20
-      if (p.y < -20) p.y = height + 20
-      if (p.y > height + 20) p.y = -20
-
-      ctx.save()
-      ctx.translate(p.x, p.y)
-      ctx.rotate(p.rotation)
-      ctx.globalAlpha = p.alpha * props.opacity
-      ctx.strokeStyle = p.color
+    for (const bucket of buckets) {
+      ctx.strokeStyle = bucket.style
       ctx.beginPath()
-      ctx.moveTo(0, -p.size / 2)
-      ctx.lineTo(p.size / 2, p.size / 2)
-      ctx.lineTo(-p.size / 2, p.size / 2)
-      ctx.closePath()
+      for (const p of bucket.items) {
+        const half = p.size / 2
+        ctx.moveTo(p.x, p.y - half)
+        ctx.lineTo(p.x + half, p.y + half)
+        ctx.lineTo(p.x - half, p.y + half)
+        ctx.closePath()
+      }
       ctx.stroke()
-      ctx.restore()
     }
-    frame = requestAnimationFrame(draw)
   }
-  draw()
+
+  const step = (now: number): void => {
+    if (!running) {
+      return
+    }
+    frame = requestAnimationFrame(step)
+    if (now - last < MIN_FRAME_MS) {
+      return
+    }
+    last = now
+    for (const bucket of buckets) {
+      for (const p of bucket.items) {
+        p.x += p.driftX
+        p.y += p.driftY
+        if (p.x < -20) p.x = width + 20
+        if (p.x > width + 20) p.x = -20
+        if (p.y < -20) p.y = height + 20
+        if (p.y > height + 20) p.y = -20
+      }
+    }
+    paint()
+  }
+
+  observer = new IntersectionObserver((entries) => {
+    const visible = entries.some((entry) => entry.isIntersecting)
+    if (visible) {
+      if (!ready && !initialise()) {
+        return
+      }
+      paint()
+      if (animated && !running) {
+        running = true
+        last = 0
+        frame = requestAnimationFrame(step)
+      }
+      return
+    }
+    if (running) {
+      running = false
+      cancelAnimationFrame(frame)
+    }
+  })
+  observer.observe(el)
 })
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(frame)
+  observer?.disconnect()
+  observer = null
 })
 </script>
 

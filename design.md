@@ -85,7 +85,17 @@ The small uppercase amber label above a headline. 21px weight 600, `0.525px` tra
 Two-column asymmetric `.split` (1.05fr / 0.95fr). Oversized left-aligned headline in white with negative tracking, body copy at weight 200 on the right or below. No boxes, no borders, pure typographic composition on black.
 
 ### Particle field
-`<ParticleField variant="cloud|ambient|lanes" :opacity="n" />`. Canvas 2D, thousands of outlined 1px triangles in the full chromatic spectrum, drifting slowly and wrapping at the edges so density stays constant across a long talk. `cloud` is a dense organic cluster reserved for hero moments. `ambient` is a sparse background drift. `lanes` groups particles into three horizontal bands, used once, for the three-lanes spread. Never introduce photography or screenshots into a slide carrying a cloud.
+`<ParticleField variant="cloud|ambient|lanes" :opacity="n" />`. Canvas 2D, outlined 1px triangles in the full chromatic spectrum. `cloud` is a dense organic cluster reserved for hero moments. `ambient` is a sparse background field. `lanes` groups particles into three horizontal bands, used once, for the three-lanes spread. Never introduce photography or screenshots into a slide carrying a cloud.
+
+**Performance rules, and they are not optional.** A full-bleed canvas repainting every frame costs a 1920x1080 layer repaint plus a GPU texture upload, and Slidev keeps neighbouring slides mounted, so a naive version runs several of those at once for slides nobody is looking at. That spins a laptop fan, on stage, for a background decoration. Five rules keep it cheap:
+
+1. **Only `cloud` animates.** `ambient` and `lanes` paint one frame and stop. A sparse field drifting at a tenth of a pixel per frame is not perceptible in a talk and does not justify a permanent repaint. This alone means most slides do no continuous work at all.
+2. **Animation pauses when off screen**, via `IntersectionObserver`. Covers both the slides Slidev keeps mounted either side of the current one and a backgrounded tab.
+3. **Sizing is lazy.** A canvas mounted while hidden reports `clientWidth` of 0, so measuring at mount fixes the backing store at 0x0 and the field never paints. Size on first visibility, not on mount.
+4. **Render below CSS resolution** (`RENDER_SCALE`, currently 0.6) and let CSS scale it up. At a 1px stroke the difference is invisible and it cuts painted pixels by roughly two thirds.
+5. **Batch strokes by colour bucket.** Alpha is quantised so particles can share a batch, turning one `stroke()` per particle into a couple of dozen per frame. No per-particle `save`/`restore`/`rotate`.
+
+Animation also respects `prefers-reduced-motion`, falling back to a single static paint.
 
 ### Numbered list
 `.numbered` with a violet numeral in a fixed 72px column, a 36px title, and a 21px ash-gray description. No bullets, no containers, no dividers.
@@ -118,6 +128,7 @@ The single filled violet element in the whole deck. Reserved for a genuine call 
 - Do not put planning vocabulary on a slide. Act numbers, section beats, stage directions, and notes to the speaker belong in presenter notes, never in the deck.
 - Do not write copy that refers to the talk itself. The slide carries the content; the speaker carries the narration.
 - Do not add a class whose name collides with a UnoCSS utility namespace.
+- Do not add a continuously animating full-bleed layer. Check the particle field's performance rules before animating anything.
 
 ## Elevation
 
