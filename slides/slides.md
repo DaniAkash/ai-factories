@@ -418,13 +418,13 @@ class: 'dark'
   <div class="frame">
     <div class="split">
       <div>
-        <div class="kicker">A CLAIM I SHIPPED</div>
-        <h2 class="t-sm">"No credentials<br/>reach the agent."</h2>
-        <p class="body spark" style="margin-top:45px;font-size:36px">That was an overclaim.</p>
+        <div class="kicker">WHAT ALL FOUR HAVE IN COMMON</div>
+        <h2 class="t-sm" style="line-height:1.3">Every one of them<br/>was invisible to a<br/><span class="accent">green run.</span></h2>
       </div>
       <div>
-        <p class="body">The CLI authenticates through the system keyring. The agent has shell access and runs as the same user.</p>
-        <p class="body muted">No process can hide a keyring from another process running as its own user. It could simply invoke an already-authenticated CLI, whatever my prompt said.</p>
+        <p class="body">An end-to-end demo validates the pipeline.</p>
+        <p class="body spark">It never validates its failure modes.</p>
+        <p class="body muted" style="margin-top:36px">Which is what evals are for. Not a chore you add once it works: the only thing that tells you the factory still refuses what it is supposed to refuse.</p>
       </div>
     </div>
   </div>
