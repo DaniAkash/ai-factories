@@ -423,36 +423,14 @@ class: 'dark'
   <div class="chrome"><div>Field notes</div><ChromeCounter /></div>
   <div class="frame">
     <div>
-      <div class="kicker">THAT RUN PASSED. HERE IS WHAT IT DID NOT PROVE.</div>
-      <h2 class="t-md" style="margin-bottom:45px">Four ways work<br/>disappeared silently.</h2>
+      <div class="kicker">NOT BUGS IN WHAT YOU JUST WATCHED. BUGS THAT ALREADY SHIPPED.</div>
+      <h2 class="t-sm" style="margin-bottom:45px">Each of these passed<br/>a demo exactly like that one.</h2>
       <div class="numbered">
-        <div class="row"><div class="n">01</div><div><div class="t">The cursor moved before the work happened</div><div class="d">A crash mid-pass skipped every remaining issue. Permanently. No error.</div></div></div>
-        <div class="row"><div class="n">02</div><div><div class="t">One page of fifty, then it jumped past the rest</div><div class="d">Fine on a quiet repo. Catastrophic on a cold start against a busy one.</div></div></div>
-        <div class="row"><div class="n">03</div><div><div class="t">Claims never expired</div><div class="d">A killed run left the issue marked taken, and every later pass read that as "already done".</div></div></div>
-        <div class="row"><div class="n">04</div><div><div class="t">The first run only passed because I had cloned the repo by hand</div><div class="d">The very first code path a new user hits had never once executed.</div></div></div>
+        <div class="row"><div class="n">01</div><div><div class="t">It marked work as seen before doing it</div><div class="d">The factory asks GitHub what changed since it last looked, then moves that marker forward. It moved the marker first. One crash, and every issue in that batch was never looked at again.</div></div></div>
+        <div class="row"><div class="n">02</div><div><div class="t">"In progress" with no expiry</div><div class="d">An issue gets marked so two runs cannot collide on it. A run died holding the mark. Every run after that read it as already done, forever.</div></div></div>
+        <div class="row"><div class="n">03</div><div><div class="t">A demo that passed for the wrong reason</div><div class="d">My first live run only worked because I had cloned the repository by hand an hour earlier. The code path a new user hits had never once executed.</div></div></div>
       </div>
-    </div>
-  </div>
-  <div class="foot"><div class="title">AI Factories</div><div>Field notes</div></div>
-</div>
-
----
-class: 'dark'
----
-
-<div class="slide-shell">
-  <div class="chrome"><div>Field notes</div><ChromeCounter /></div>
-  <div class="frame">
-    <div class="split">
-      <div>
-        <div class="kicker">WHAT ALL FOUR HAVE IN COMMON</div>
-        <h2 class="t-sm" style="line-height:1.3">Every one of them<br/>was invisible to a<br/><span class="accent">green run.</span></h2>
-      </div>
-      <div>
-        <p class="body">An end-to-end demo validates the pipeline.</p>
-        <p class="body spark">It never validates its failure modes.</p>
-        <p class="body muted" style="margin-top:36px">Which is what evals are for. Not a chore you add once it works: the only thing that tells you the factory still refuses what it is supposed to refuse.</p>
-      </div>
+      <p class="body spark" style="margin-top:45px">Nothing errored. Nothing went red. The work simply stopped existing.</p>
     </div>
   </div>
   <div class="foot"><div class="title">AI Factories</div><div>Field notes</div></div>
@@ -466,10 +444,10 @@ class: 'dark'
   <div class="chrome"><div>Field notes</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1560px">
-      <div class="kicker">THE GENERAL LESSON</div>
-      <h2 class="t-sm" style="line-height:1.3">Prompt rules are defence in depth.<br/><span class="spark">They are never the mechanism.</span></h2>
-      <p class="body" style="margin-top:54px">If your safety story contains the words "the agent is instructed not to", you have written a preference, not a control. Find the structural version, or say plainly that you have not got one yet.</p>
-      <p class="body muted">What actually held: a disposable worktree, a diff reviewed before any push, and a draft that cannot merge itself.</p>
+      <div class="kicker">SO WHAT CATCHES THEM</div>
+      <h2 class="t-sm" style="line-height:1.3">An end-to-end demo validates<br/>the pipeline.<br/><br/><span class="spark">It never validates its failure modes.</span></h2>
+      <p class="body" style="margin-top:54px">Which is why the evals are the product, not a chore you add once it works. They are the only thing that tells you the factory still refuses what it is supposed to refuse.</p>
+      <p class="body muted">Change one line of a prompt and the only way to know what else moved is a suite that asserts on what the agent actually did, not on what it said.</p>
     </div>
   </div>
   <div class="foot"><div class="title">AI Factories</div><div>Field notes</div></div>
