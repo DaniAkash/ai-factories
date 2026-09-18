@@ -12,16 +12,21 @@ Slides and demo for the talk **"Automate your software delivery with AI Factorie
 
 ```
 .
-├── slides/     Slidev deck for the talk
-└── design.md   Style reference: tokens, components, do's and don'ts
+├── slides/
+│   ├── slides.md         30 minute cut, 22 slides  (the default)
+│   └── slides-45min.md   45 minute cut, 61 slides
+└── design.md             Style reference: tokens, components, do's and don'ts
 ```
+
+Two cuts, because the talk is given at two lengths. The **30 minute cut** splits 15 minutes of slides around a 15 minute live demo: the demo shows the mechanism, so the slides argue the case rather than explaining how it works. The **45 minute cut** carries the full anatomy on slides and uses the demo as a bracket.
 
 ## Run the deck locally
 
 ```sh
 cd slides
 bun install
-bun run dev
+bun run dev                    # the 30 minute cut
+bunx slidev slides-45min.md    # the 45 minute cut
 ```
 
 Built with [Slidev](https://sli.dev). Design tokens live in [`design.md`](./design.md).
@@ -43,7 +48,9 @@ Topics include:
 - Substituting every hosted primitive with something that runs on a laptop
 - Why an end-to-end demo validates the pipeline and never its failure modes
 
-The demo is a factory running live on the speaker's own machine: an issue filed on stage at the start, and a reviewed draft pull request read together at the end.
+The demo is a factory running live on the speaker's own machine. In the 30 minute cut it is half the talk: an issue filed on stage, the worktree and the claim table opened while the run works, the pull request read as an evidence chain, the trust gate refusing an untrusted issue, and a rule changed on stage to watch the behaviour move.
+
+The twelve invariants the talk draws on are listed in the 45 minute deck and in the anatomy section above.
 
 ## Speaker
 

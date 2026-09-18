@@ -164,10 +164,15 @@
   color: var(--color-ash-gray);
 }
 
-.accent { color: var(--color-electric-iris); }
-.spark  { color: var(--color-saffron-spark); }
-.dim    { color: var(--color-ash-gray); }
-.mist   { color: var(--color-silver-mist); }
+/*
+ * Scoped, and declared after the type classes on purpose. A type class sets a
+ * colour and is itself scoped, so an unscoped colour utility loses the
+ * specificity tie and a heading silently renders white.
+ */
+.slide-shell .accent { color: var(--color-electric-iris); }
+.slide-shell .spark  { color: var(--color-saffron-spark); }
+.slide-shell .dim    { color: var(--color-ash-gray); }
+.slide-shell .mist   { color: var(--color-silver-mist); }
 
 /* ---------------------------------------------------------------- layout */
 
