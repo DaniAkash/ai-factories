@@ -5,28 +5,27 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
  * The deck's signature visual: a field of tiny outlined triangles in the brand's
  * chromatic spectrum, against the void.
  *
- * Performance is the whole design of this component. A full-bleed canvas
- * repainting every frame costs a 1920x1080 layer repaint plus a GPU texture
- * upload, and Slidev keeps neighbouring slides mounted, so a naive version runs
- * several of those at once including for slides nobody is looking at. Three
- * rules keep it cheap:
+ * The `cloud` variant opens as a tight circle and slowly scatters outward, so
+ * landing on a hero slide blooms the constellation rather than showing a static
+ * field. The scatter runs on an ease-out curve and then stops completely, which
+ * is both the nicer motion and the cheaper one.
  *
- * 1. Only `cloud` animates. `ambient` and `lanes` paint a single frame and stop,
- *    because a sparse field drifting at 0.1px per frame is not perceptible in a
- *    talk and does not justify a permanent repaint.
- * 2. Animation pauses whenever the canvas is off screen, which covers both the
- *    slides Slidev keeps mounted either side of the current one and a
- *    backgrounded tab.
- * 3. Strokes are batched per colour bucket, so a frame issues a couple of dozen
- *    stroke calls instead of one per particle.
+ * Performance is otherwise the whole design of this component. A full-bleed
+ * canvas repainting every frame costs a 1920x1080 layer repaint plus a GPU
+ * texture upload, and Slidev keeps neighbouring slides mounted, so a naive
+ * version runs several of those at once for slides nobody is looking at. See
+ * design.md for the five rules that keep it cheap.
  */
 const props = withDefaults(
   defineProps<{
     variant?: 'cloud' | 'ambient' | 'lanes'
     density?: number
     opacity?: number
+    /** Circle centre as a fraction of the canvas. Cloud only. */
+    cx?: number
+    cy?: number
   }>(),
-  { variant: 'ambient', density: 1, opacity: 1 },
+  { variant: 'ambient', density: 1, opacity: 1, cx: 0.73, cy: 0.5 },
 )
 
 const canvas = ref<HTMLCanvasElement | null>(null)
@@ -35,29 +34,33 @@ let observer: IntersectionObserver | null = null
 
 const PALETTE = ['#8052ff', '#ffb829', '#15846e', '#b07cff', '#5b8dff', '#ff6bd6']
 
-/**
- * The field is decoration, so it renders below CSS resolution and is scaled up.
- * At a 1px stroke the difference is invisible and it cuts the painted pixel
- * count by roughly two thirds.
- */
 const RENDER_SCALE = 0.6
-
-/** Alpha is quantised so particles can share a stroke batch. */
 const ALPHA_STEPS = 4
 
+/**
+ * How far the circle opens out, and over how long.
+ *
+ * Kept deliberately modest. Past roughly 1.4 the field stops reading as a cloud
+ * placed beside the headline and becomes a full-bleed wash that clips at the
+ * canvas edges, which loses the composition the slide is built around.
+ */
+const SPREAD_TO = 1.3
+const SPREAD_MS = 30_000
+
 interface Particle {
+  /** Static variants position directly. */
   x: number
   y: number
-  size: number
+  /** Cloud positions from polar coordinates so the whole field can expand together. */
+  cos: number
+  sin: number
+  baseRadius: number
   driftX: number
   driftY: number
+  size: number
 }
 
 type Bucket = { style: string; items: Particle[] }
-
-function blobRadius(angle: number, base: number): number {
-  return base * (0.72 + 0.2 * Math.sin(angle * 3) + 0.12 * Math.sin(angle * 5 + 1.4))
-}
 
 function hexToRgba(hex: string, alpha: number): string {
   const n = Number.parseInt(hex.slice(1), 16)
@@ -68,17 +71,23 @@ function build(width: number, height: number): Bucket[] {
   const counts = { cloud: 900, ambient: 220, lanes: 600 }
   const total = Math.round(counts[props.variant] * props.density)
   const buckets = new Map<string, Bucket>()
+  // A circle that clears the headline column rather than filling the canvas.
+  const circleRadius = Math.min(width, height) * 0.32
 
   for (let i = 0; i < total; i += 1) {
-    let x: number
-    let y: number
+    let x = 0
+    let y = 0
+    let cos = 0
+    let sin = 0
+    let baseRadius = 0
 
     if (props.variant === 'cloud') {
       const angle = Math.random() * Math.PI * 2
-      const reach = Math.pow(Math.random(), 0.55)
-      const radius = blobRadius(angle, Math.min(width, height) * 0.46) * reach
-      x = width / 2 + Math.cos(angle) * radius
-      y = height / 2 + Math.sin(angle) * radius * 0.86
+      // The exponent biases mass toward the centre; a plain sqrt would spread
+      // it evenly by area and the circle would read as a ring.
+      baseRadius = circleRadius * Math.pow(Math.random(), 0.62)
+      cos = Math.cos(angle)
+      sin = Math.sin(angle)
     } else if (props.variant === 'lanes') {
       const laneCentre = height * (0.26 + (i % 3) * 0.24)
       x = Math.random() * width
@@ -98,9 +107,12 @@ function build(width: number, height: number): Bucket[] {
     bucket.items.push({
       x,
       y,
+      cos,
+      sin,
+      baseRadius,
+      driftX: (Math.random() - 0.5) * 3.5,
+      driftY: (Math.random() - 0.5) * 3.5,
       size: 3 + Math.random() * 6,
-      driftX: (Math.random() - 0.5) * 0.12,
-      driftY: (Math.random() - 0.5) * 0.12,
     })
     buckets.set(style, bucket)
   }
@@ -118,15 +130,19 @@ onMounted(() => {
   }
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  const animated = props.variant === 'cloud' && !reduceMotion
+  const isCloud = props.variant === 'cloud'
+  const animated = isCloud && !reduceMotion
   const MIN_FRAME_MS = 1000 / 30
 
   let buckets: Bucket[] = []
   let width = 0
   let height = 0
+  let centreX = 0
+  let centreY = 0
   let ready = false
   let running = false
   let last = 0
+  let startedAt = 0
 
   /**
    * Sizing is deferred until the canvas is actually on screen. Slidev mounts
@@ -143,22 +159,32 @@ onMounted(() => {
     height = Math.round(cssHeight * RENDER_SCALE)
     el.width = width
     el.height = height
+    centreX = width * props.cx
+    centreY = height * props.cy
     buckets = build(width, height)
     ready = true
     return true
   }
 
-  const paint = (): void => {
+  /** `spread` of 1 is the closed circle; it eases out toward SPREAD_TO. */
+  const paint = (spread: number): void => {
     ctx.clearRect(0, 0, width, height)
     ctx.lineWidth = 1
+    const scatter = spread - 1
     for (const bucket of buckets) {
       ctx.strokeStyle = bucket.style
       ctx.beginPath()
       for (const p of bucket.items) {
+        const px = isCloud
+          ? centreX + p.cos * p.baseRadius * spread + p.driftX * scatter
+          : p.x
+        const py = isCloud
+          ? centreY + p.sin * p.baseRadius * spread + p.driftY * scatter
+          : p.y
         const half = p.size / 2
-        ctx.moveTo(p.x, p.y - half)
-        ctx.lineTo(p.x + half, p.y + half)
-        ctx.lineTo(p.x - half, p.y + half)
+        ctx.moveTo(px, py - half)
+        ctx.lineTo(px + half, py + half)
+        ctx.lineTo(px - half, py + half)
         ctx.closePath()
       }
       ctx.stroke()
@@ -169,22 +195,22 @@ onMounted(() => {
     if (!running) {
       return
     }
-    frame = requestAnimationFrame(step)
     if (now - last < MIN_FRAME_MS) {
+      frame = requestAnimationFrame(step)
       return
     }
     last = now
-    for (const bucket of buckets) {
-      for (const p of bucket.items) {
-        p.x += p.driftX
-        p.y += p.driftY
-        if (p.x < -20) p.x = width + 20
-        if (p.x > width + 20) p.x = -20
-        if (p.y < -20) p.y = height + 20
-        if (p.y > height + 20) p.y = -20
-      }
+
+    const t = Math.min(1, (now - startedAt) / SPREAD_MS)
+    const eased = 1 - Math.pow(1 - t, 3)
+    paint(1 + (SPREAD_TO - 1) * eased)
+
+    if (t >= 1) {
+      // Settled. Nothing left to animate, so stop rather than repaint a still.
+      running = false
+      return
     }
-    paint()
+    frame = requestAnimationFrame(step)
   }
 
   observer = new IntersectionObserver((entries) => {
@@ -193,9 +219,14 @@ onMounted(() => {
       if (!ready && !initialise()) {
         return
       }
-      paint()
-      if (animated && !running) {
+      if (!animated) {
+        paint(isCloud ? SPREAD_TO : 1)
+        return
+      }
+      if (!running) {
+        // Re-entering a hero slide replays the bloom.
         running = true
+        startedAt = performance.now()
         last = 0
         frame = requestAnimationFrame(step)
       }

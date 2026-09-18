@@ -85,7 +85,9 @@ The small uppercase amber label above a headline. 21px weight 600, `0.525px` tra
 Two-column asymmetric `.split` (1.05fr / 0.95fr). Oversized left-aligned headline in white with negative tracking, body copy at weight 200 on the right or below. No boxes, no borders, pure typographic composition on black.
 
 ### Particle field
-`<ParticleField variant="cloud|ambient|lanes" :opacity="n" />`. Canvas 2D, outlined 1px triangles in the full chromatic spectrum. `cloud` is a dense organic cluster reserved for hero moments. `ambient` is a sparse background field. `lanes` groups particles into three horizontal bands, used once, for the three-lanes spread. Never introduce photography or screenshots into a slide carrying a cloud.
+`<ParticleField variant="cloud|ambient|lanes" :opacity="n" :cx="0..1" :cy="0..1" />`. Canvas 2D, outlined 1px triangles in the full chromatic spectrum.
+
+`cloud` is the hero treatment: a dense circle that opens as a tight disc and slowly scatters outward on an ease-out curve over 30 seconds, then settles and stops. It defaults to `cx: 0.73`, sitting in the right half of the frame so it balances a left-aligned headline without crowding it. Landing on a hero slide replays the bloom, which is why it is worth having on the title, the thesis statement, and the close. Spread is capped at 1.3: past roughly 1.4 the field stops reading as a cloud placed beside the headline and becomes a full-bleed wash that clips at the canvas edges. `ambient` is a sparse background field. `lanes` groups particles into three horizontal bands, used once, for the three-lanes spread. Never introduce photography or screenshots into a slide carrying a cloud.
 
 **Performance rules, and they are not optional.** A full-bleed canvas repainting every frame costs a 1920x1080 layer repaint plus a GPU texture upload, and Slidev keeps neighbouring slides mounted, so a naive version runs several of those at once for slides nobody is looking at. That spins a laptop fan, on stage, for a background decoration. Five rules keep it cheap:
 
