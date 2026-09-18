@@ -420,20 +420,26 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <div class="chrome"><div>Field notes</div><ChromeCounter /></div>
+  <div class="chrome"><div>The practices</div><ChromeCounter /></div>
   <div class="frame">
     <div>
-      <div class="kicker">NOT BUGS IN WHAT YOU JUST WATCHED. BUGS THAT ALREADY SHIPPED.</div>
-      <h2 class="t-sm" style="margin-bottom:45px">Each of these passed<br/>a demo exactly like that one.</h2>
-      <div class="numbered">
-        <div class="row"><div class="n">01</div><div><div class="t">It marked work as seen before doing it</div><div class="d">The factory asks GitHub what changed since it last looked, then moves that marker forward. It moved the marker first. One crash, and every issue in that batch was never looked at again.</div></div></div>
-        <div class="row"><div class="n">02</div><div><div class="t">"In progress" with no expiry</div><div class="d">An issue gets marked so two runs cannot collide on it. A run died holding the mark. Every run after that read it as already done, forever.</div></div></div>
-        <div class="row"><div class="n">03</div><div><div class="t">A demo that passed for the wrong reason</div><div class="d">My first live run only worked because I had cloned the repository by hand an hour earlier. The code path a new user hits had never once executed.</div></div></div>
+      <div class="kicker">WHY THAT IS SAFE TO LEAVE RUNNING</div>
+      <h2 class="t-sm" style="margin-bottom:36px">Six rules. You just watched<br/>every one of them hold.</h2>
+      <div class="cols-2" style="gap:90px">
+        <div class="numbered">
+          <div class="row"><div class="n">01</div><div><div class="t">Trust at the door</div><div class="d">Only an issue from someone the repository already trusts starts a run. Decided from the API, never from text the model can read.</div></div></div>
+          <div class="row"><div class="n">02</div><div><div class="t">One run per issue, durably</div><div class="d">A claim with a lease. A double poll is harmless, and a run that dies releases its issue instead of holding it forever.</div></div></div>
+          <div class="row"><div class="n">03</div><div><div class="t">A workspace you throw away</div><div class="d">Every run gets its own checkout off the default branch. Nothing inherits the last run's leftovers.</div></div></div>
+        </div>
+        <div class="numbered">
+          <div class="row"><div class="n">04</div><div><div class="t">The agent edits files, and nothing else</div><div class="d">No git. No token. The issue body cannot talk it into reaching the repository.</div></div></div>
+          <div class="row"><div class="n">05</div><div><div class="t">Delivery is gated on evidence</div><div class="d">No diff, no pull request. The factory reads what the agent produced before anything is pushed.</div></div></div>
+          <div class="row"><div class="n">06</div><div><div class="t">A draft is the ceiling</div><div class="d">Merge is not guarded. It is not in the tool surface at all.</div></div></div>
+        </div>
       </div>
-      <p class="body spark" style="margin-top:45px">Nothing errored. Nothing went red. The work simply stopped existing.</p>
     </div>
   </div>
-  <div class="foot"><div class="title">AI Factories</div><div>Field notes</div></div>
+  <div class="foot"><div class="title">AI Factories</div><div>The practices</div></div>
 </div>
 
 ---
@@ -441,16 +447,16 @@ class: 'dark'
 ---
 
 <div class="slide-shell">
-  <div class="chrome"><div>Field notes</div><ChromeCounter /></div>
+  <div class="chrome"><div>The practices</div><ChromeCounter /></div>
   <div class="frame">
     <div style="max-width:1560px">
-      <div class="kicker">SO WHAT CATCHES THEM</div>
-      <h2 class="t-sm" style="line-height:1.3">An end-to-end demo validates<br/>the pipeline.<br/><br/><span class="spark">It never validates its failure modes.</span></h2>
-      <p class="body" style="margin-top:54px">Which is why the evals are the product, not a chore you add once it works. They are the only thing that tells you the factory still refuses what it is supposed to refuse.</p>
-      <p class="body muted">Change one line of a prompt and the only way to know what else moved is a suite that asserts on what the agent actually did, not on what it said.</p>
+      <div class="kicker">AND HOW THEY STAY TRUE</div>
+      <h2 class="t-sm" style="line-height:1.3">Six rules are only rules<br/>if something <span class="accent">enforces them.</span></h2>
+      <p class="body" style="margin-top:54px">The evals assert on what the agent did, not on what it said. A greeting never starts the line. An untrusted author never gets a run. The stations always run in order.</p>
+      <p class="body muted">So you can change a prompt and know immediately what else moved. That is the difference between a factory you tune and a factory you hope about.</p>
     </div>
   </div>
-  <div class="foot"><div class="title">AI Factories</div><div>Field notes</div></div>
+  <div class="foot"><div class="title">AI Factories</div><div>The practices</div></div>
 </div>
 
 ---
