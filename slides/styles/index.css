@@ -169,11 +169,17 @@
 .slide-shell .body.muted { color: var(--ink-muted); }
 .slide-shell .body + .body { margin-top: var(--spacing-24); }
 
-.caption {
-  font-size: var(--text-caption);
+/*
+ * Caption is a misnomer here: it is only ever used for running prose that the
+ * back row has to read, never for a label. At the chrome size it was roughly
+ * 1.6% of frame height, which is below what survives a projector, so it sits
+ * at body size and carries the muted ink rather than the faint one.
+ */
+.slide-shell .caption {
+  font-size: var(--text-body);
   font-weight: var(--font-weight-extralight);
   line-height: 1.5;
-  color: var(--ink-faint);
+  color: var(--ink-muted);
 }
 
 /*
@@ -254,7 +260,7 @@
   background: none;
   overflow: visible;
 }
-.slide-shell .code.sm { font-size: 21px; line-height: 1.6; }
+.slide-shell .code.sm { font-size: 24px; line-height: 1.6; }
 .slide-shell .code.lg { font-size: 32px; line-height: 1.55; }
 .slide-shell .code .hi   { color: var(--ink); }
 .slide-shell .code .vio  { color: var(--accent); }
@@ -282,7 +288,7 @@
   letter-spacing: var(--tracking-heading-2xs);
 }
 .numbered .t { font-size: var(--text-heading-2xs); font-weight: var(--font-weight-regular); line-height: 1.25; }
-.numbered .d { font-size: 21px; font-weight: var(--font-weight-extralight); color: var(--ink-faint); margin-top: 6px; }
+.numbered .d { font-size: 24px; font-weight: var(--font-weight-extralight); color: var(--ink-faint); margin-top: 6px; }
 
 /* Ratio bar for the 30/70 slide. No border, pure fills. */
 .ratio { display: flex; width: 100%; height: 18px; gap: 6px; }
