@@ -4,6 +4,8 @@ The live half of the talk. Fifteen minutes, on stage, with the factory running o
 
 Everything below is a real command. Nothing here is staged output.
 
+The factory serves a dashboard of its own, and that is what the audience watches: each station drawn as a station, and the acceptance criteria being answered one at a time. The terminal stays open beside it, because the log is the thing that proves the screen is not a mockup.
+
 ---
 
 ## Before you leave the house
@@ -11,9 +13,12 @@ Everything below is a real command. Nothing here is staged output.
 | Check | Command | Expect |
 | --- | --- | --- |
 | Factory is healthy | `bun run src/index.ts doctor` | gh authenticated, git present, config valid |
+| Dashboard is built | `bun run ui:install && bun run ui:build` | `ui/dist` written |
 | The agent is warm | `bun run src/index.ts run <scratch-repo> <throwaway-issue>` | a full run, so the ACP adapter is downloaded and cached |
 | Tests and evals are green | `bun run typecheck && bun run test && bun run eval` | 0 failures |
 | Deck builds | `cd slides && bun run build` | built |
+
+**Build the dashboard, do not run it from Vite.** The service serves `ui/dist` itself, so there is one process and one port. A dev server is a second thing to start and a second thing to fail.
 
 **Pre-warming is not optional.** The first use of an ACP agent pulls its adapter through `npx`, which can take ten seconds or more. Do that at home, not on stage.
 
@@ -23,17 +28,19 @@ Everything below is a real command. Nothing here is staged output.
 
 ## Stage setup, before you start talking
 
-1. **Terminal at presentation size.** Test it from the back of the room, not on the laptop screen. The demo is fifteen minutes of watching a terminal; if it cannot be read, there is no demo.
-2. **Three things open and ready:**
-   - a terminal in the aalai directory
-   - a browser on the scratch repository's issues page
-   - the deck, on the slide before the handoff
-3. **The service is already running.** Start it before you walk on:
+1. **Start the factory.** It serves the dashboard on the same port.
    ```sh
-   bun run service status     # confirm launchd has it
+   bun start
+   ```
+2. **Browser on `http://localhost:4173`**, full screen, with `present` toggled on. Test it from the back of the room.
+3. **A terminal beside it**, at presentation size, tailing the log:
+   ```sh
    tail -f ~/.aalai/logs/aalai.out.log
    ```
-4. **A clean slate.** See [Resetting between rehearsals](#resetting-between-rehearsals).
+4. **A second browser tab** on the scratch repository's issues page.
+5. **A clean slate.** See [Resetting between rehearsals](#resetting-between-rehearsals).
+
+The dashboard carries the story and the terminal carries the proof. When you want the audience to believe the screen, point at the log.
 
 ---
 
@@ -43,12 +50,13 @@ A full four station run takes **four to five minutes**. That is the clock everyt
 
 ### 00:00 to 01:00 · It is already running
 
+Dashboard on screen, sitting on **Waiting for work**, stations all dashed and queued.
+
 ```sh
-bun run service status
 bun run src/index.ts status
 ```
 
-Show that this is a service under `launchd`, not a script you are about to type. `status` lists previous runs and the pull requests they produced.
+Show that this is a service under `launchd`, not a script you are about to type. Hit `history` on the dashboard: previous runs and the pull requests they produced.
 
 **Say:** this has been running on my laptop. It polls, it does not receive webhooks, and that is a deliberate choice.
 
@@ -64,25 +72,30 @@ Use a bug with **a failing test already in the repo**. That matters: it lets the
 bun run src/index.ts run <owner>/<repo> <issue-number>
 ```
 
+Switch to the dashboard. The title fills in and `workspace` lights violet.
+
 Do not watch it in silence. Move straight to the next beat.
 
-### 02:00 to 06:30 · Narrate the stations, and open the machinery
+### 02:00 to 06:30 · Watch the line, and open the machinery
 
-The log prints each stage as it happens. Call them out as they appear:
+The dashboard narrates itself. Call out what changes as it happens:
 
 ```
-workspace   worktree ready            a clean checkout, made for this issue
-analyst     tool ...                  it is reading the repo before planning
-pipeline    plan ready  criteria=7    seven acceptance criteria, written before any code
-implementer tool Editing files        now it writes
-pipeline    committed locally         committed, not pushed. nothing has left this machine
-workspace   review worktree ready     a second checkout, for the reviewer
-reviewer    tool git diff main...     it reads the real diff, not a summary
-pipeline    verdict  approve 7/7      judged one criterion at a time
-deliver     draft pull request opened
+workspace    lights, then settles to the branch name
+analyst      lights. Its commands scroll in the right-hand column.
+             ▸ ACCEPTANCE CRITERIA fills in on the left ◂
+implementer  lights. The criteria sit there, unanswered.
+             ▸ the handoff under the arrow reads "a commit, on its own checkout"
+reviewer     lights. Its first command is git diff against the branch.
+             ▸ the criteria tick off, one at a time, each with its evidence
+deliver      draft pull request
 ```
 
-While the agent works, open a second pane and show the machinery:
+**The line to land**, when the criteria appear: those were written before any code existed, and the station that writes the code never sees them as negotiable.
+
+**The second line**, when they start ticking: same list, now answered against the real diff.
+
+While the agent works, drop to the terminal and show the machinery:
 
 ```sh
 # the disposable workspace, made for this issue and thrown away after
@@ -91,16 +104,13 @@ ls ~/workbench/worktrees/<owner>/<repo>/
 # the claim, which is why a double poll is harmless
 sqlite3 ~/.aalai/aalai.sqlite \
   "select repo, issue, status, branch from runs order by started_at desc limit 5;"
-
-# the conventions the agent was told to read
-cat ~/workbench/worktrees/<owner>/<repo>/aalai-issue-<n>/AGENTS.md
 ```
 
-**The line to land here:** when the review worktree appears, point at it. Two checkouts of the same branch. The reviewer reads what was committed, from a directory the implementer never touched.
+Two checkouts appear for the same issue while the reviewer runs: the implementer's, and the reviewer's own. Point at that. The reviewer reads what was committed, from a directory the implementer never touched.
 
 ### 06:30 to 10:00 · The pull request, read in order
 
-Open the draft PR. **Do not scroll to the diff first.** Read it top to bottom and say why:
+Click through from the dashboard footer. **Do not scroll to the diff first.** Read it top to bottom and say why:
 
 1. **The problem**, restated by the planning station
 2. **The approach**, and the alternative it rejected
@@ -114,16 +124,13 @@ Point out that it is a **draft**. Marking it ready is a person's job, and merge 
 
 ### 10:00 to 11:30 · The gate says no
 
-Show a run that is refused before anything starts. Set a label requirement:
+Back on the dashboard. Set a label requirement and file an issue without it:
 
 ```sh
 # in aalai.config.json, set:  "requireLabel": "aalai"
-bun run src/index.ts run <owner>/<repo> <an-unlabelled-issue>
 ```
 
-```
-error  issue rejected by intake policy  reason="missing label \"aalai\""
-```
+File an unlabelled issue on the scratch repo and wait one poll tick. It appears in the dashboard footer under **turned away at the door**, in amber, with the reason.
 
 Nothing was cloned. No agent ran. The decision happened at the door, from the API response, before any model saw anything.
 
@@ -137,7 +144,7 @@ This is the closing beat, and it is the reframe made literal.
 bun run eval
 ```
 
-Thirty cases, all green. Then **break a rule on stage**. In `src/watch/intake.ts`, add `'NONE'` to `TRUSTED_ASSOCIATIONS`:
+Forty cases, all green. Then **break a rule on stage**. In `src/watch/intake.ts`, add `'NONE'` to `TRUSTED_ASSOCIATIONS`:
 
 ```diff
  export const TRUSTED_ASSOCIATIONS: ReadonlySet<string> = new Set([
@@ -170,11 +177,13 @@ Leave the pull request on screen. Return to the deck.
 
 | If | Then |
 | --- | --- |
+| The dashboard will not start | The factory does not care. It logs a warning and runs anyway. Drive the whole demo from the terminal; every beat above has a log line behind it. |
+| The browser shows nothing | Check the toggle in the top right. `recorded` means the service has sent no events; `live ·` means it is connected. A recorded run is a working fallback on its own. |
 | The run takes longer than expected | You have slack: beats at 10:00 and 11:30 are droppable, in that order. Never cut into the slides after the demo. |
-| The agent produces no diff | That is a designed outcome, not a failure. aalai comments on the issue and opens nothing. Show that, and say so: no diff, no pull request. |
-| The reviewer requests changes | Better than a clean pass. Let it run the revision. It is bounded at two, and the loop is the point. |
-| The run fails outright | Use it. Switch to the recorded run, and say that a demo proves the pipeline and never its failure modes. That is the next slide anyway. |
-| Network dies | Play `demo/recording.cast` or the recorded video. Have it one keystroke away. |
+| The agent produces no diff | That is a designed outcome, not a failure. The dashboard shows **stopped** with the reason, and no pull request is opened. Show that, and say so. |
+| The reviewer requests changes | Better than a clean pass. The station lights again for the revision. It is bounded at two, and the loop is the point. |
+| The run fails outright | Use it. A demo proves the pipeline and never its failure modes, which is the next slide anyway. |
+| Network dies | Toggle to `recorded` and walk the recorded run. Have it on screen before you need it. |
 | Anything hangs | `Ctrl-C`. The claim carries a lease, so the issue is not stuck: it becomes runnable again after `staleClaimMinutes`. Or `bun run src/index.ts forget <repo> <issue>` to clear it now. |
 
 ---
@@ -205,12 +214,18 @@ For a fresh bug instead of a replay, add a new broken helper with a failing test
 
 ```sh
 bun run src/index.ts doctor                       # health check
+bun start                                         # factory and dashboard, one process
 bun run src/index.ts run <owner>/<repo> <n>       # one issue, now
 bun run src/index.ts status                       # recent runs
 bun run src/index.ts forget <owner>/<repo> <n>    # clear a run record
-bun run once                                      # one polling pass
-bun start                                         # the watch loop, foreground
+bun run src/index.ts once                         # one polling pass
+bun run ui:install                                # once
+bun run ui:build                                  # produce ui/dist for the service to serve
 bun run service install | status | uninstall      # launchd
 bun run eval                                      # the eval suite
 bun run test                                      # unit tests
 ```
+
+## The dashboard, in one paragraph
+
+Each station is a rule whose style carries its state: dashed is queued, solid violet is working, thin white is done. The label under each arrow is what that station hands to the next one. The left column holds the acceptance criteria from the moment the analyst writes them until the reviewer answers them, which is the only element that persists across three stations. `present` drops to a projector-sized layout, `history` lists what previous runs produced, and issues the gate turned away appear in the footer.
