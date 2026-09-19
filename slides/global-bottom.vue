@@ -1,13 +1,13 @@
 <template>
-  <div class="void-base" />
+  <div class="deck-base" />
 </template>
 
 <style>
-/* The canvas behind every slide is the void itself, never a theme default. */
-.void-base {
+/* The canvas behind every slide, never a theme default. */
+.deck-base {
   position: fixed;
   inset: 0;
-  background: #000000;
+  background: var(--surface);
   z-index: -1;
 }
 </style>

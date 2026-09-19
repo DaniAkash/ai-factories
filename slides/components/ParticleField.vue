@@ -32,7 +32,9 @@ const canvas = ref<HTMLCanvasElement | null>(null)
 let frame = 0
 let observer: IntersectionObserver | null = null
 
-const PALETTE = ['#8052ff', '#ffb829', '#15846e', '#b07cff', '#5b8dff', '#ff6bd6']
+/* Darkened for the light ground: these are strokes at partial alpha, so a tint
+   that reads on black disappears entirely on paper. */
+const PALETTE = ['#6a35f5', '#9a5b00', '#0f6d5a', '#7a4fd8', '#2f5fd0', '#c02f90']
 
 const RENDER_SCALE = 0.6
 const ALPHA_STEPS = 4
@@ -97,7 +99,7 @@ function build(width: number, height: number): Bucket[] {
       y = Math.random() * height
     }
 
-    const colour = PALETTE[Math.floor(Math.random() * PALETTE.length)] ?? '#8052ff'
+    const colour = PALETTE[Math.floor(Math.random() * PALETTE.length)] ?? '#6a35f5'
     const edgeFade = props.variant === 'cloud' ? 1 : 0.55
     const rawAlpha = (0.25 + Math.random() * 0.6) * edgeFade * props.opacity
     const step = Math.max(1, Math.round(rawAlpha * ALPHA_STEPS))
