@@ -14,7 +14,8 @@ The factory serves a dashboard of its own, and that is what the audience watches
 | --- | --- | --- |
 | Factory is healthy | `bun run src/index.ts doctor` | gh authenticated, git present, config valid |
 | Dashboard is built | `bun run ui:install && bun run ui:build` | `ui/dist` written |
-| The agent is warm | `bun run src/index.ts run <scratch-repo> <throwaway-issue>` | a full run, so the ACP adapter is downloaded and cached |
+| The demo bug is seeded | see [The bug you seed](#the-bug-you-seed) | `bun test` on the demo repo shows 1 fail, 1 pass |
+| The agent is warm | `bun run src/index.ts run DaniAkash/aalai-demo <old-issue>` | a full run, so the ACP adapter is downloaded and cached |
 | Tests and evals are green | `bun run typecheck && bun run test && bun run eval` | 0 failures |
 | Deck builds | `cd slides && bun run build` | built |
 
@@ -23,6 +24,136 @@ The factory serves a dashboard of its own, and that is what the audience watches
 **Pre-warming is not optional.** The first use of an ACP agent pulls its adapter through `npx`, which can take ten seconds or more. Do that at home, not on stage.
 
 **Tether to your phone.** The run needs network for both the agent and GitHub. Do a full rehearsal on the tether, not on home wifi.
+
+---
+
+## The bug you seed
+
+The demo repository is `DaniAkash/aalai-demo`: a dozen small pure helpers, each with its own test file. Every helper in it has already been through the factory, so **the demo needs a bug that has never been run.** Seed it the night before, never on the day.
+
+The shape that works, and why each part of it earns its place:
+
+| Property | What it buys you on stage |
+| --- | --- |
+| A pure function, no dependencies | The run finishes in four to five minutes. Anything that installs or builds does not. |
+| A failing test already committed | The agent confirms the baseline failure before it touches the fix. That is "evidence, not checkmarks" happening live instead of being asserted. |
+| A second test that already passes | It becomes the second acceptance criterion, and the obvious careless fix breaks it. The criteria panel is then doing real work rather than decoration. |
+| A one line fix | It sets up the closing line on the pull request: the reason to trust one line is everything above it. |
+
+### Seed it
+
+```sh
+cd ~/workbench/DaniAkash/aalai-demo && git switch main && git pull
+```
+
+```sh
+cat > src/chunk.ts <<'EOF'
+/** Splits an array into chunks of at most size, in order. */
+export const chunk = <T>(items: readonly T[], size: number): T[][] => {
+  const out: T[][] = []
+  for (let i = 0; i + size <= items.length; i += size) {
+    out.push(items.slice(i, i + size))
+  }
+  return out
+}
+EOF
+
+cat > test/chunk.test.ts <<'EOF'
+import { expect, test } from 'bun:test'
+import { chunk } from '../src/chunk'
+
+test('keeps the final partial chunk', () => {
+  expect(chunk([1, 2, 3, 4, 5], 2)).toEqual([[1, 2], [3, 4], [5]])
+})
+
+test('adds no empty chunk when the length divides evenly', () => {
+  expect(chunk([1, 2, 3, 4], 2)).toEqual([[1, 2], [3, 4]])
+})
+EOF
+```
+
+Check the baseline before you commit. This exact shape is the thing that makes the demo work:
+
+```sh
+bun test test/chunk.test.ts
+```
+
+```
+(fail) keeps the final partial chunk
+ 1 pass
+ 1 fail
+```
+
+**One failure and one pass.** If you seed a different bug and get two failures, the second acceptance criterion stops being an invariant the agent has to protect, and the reviewer beat loses its point.
+
+```sh
+git add src/chunk.ts test/chunk.test.ts
+git commit -m "add chunk with a failing test"
+git push
+```
+
+Leave the issue unfiled. Filing it is the live beat.
+
+### The issue, word for word
+
+Title, which you type live:
+
+```
+chunk drops the final partial chunk
+```
+
+Body, which you paste:
+
+```
+`chunk([1, 2, 3, 4, 5], 2)` returns `[[1, 2], [3, 4]]` and silently loses the `[5]`.
+
+The loop stops as soon as a whole chunk no longer fits, so any remainder is dropped instead of being returned as a shorter final chunk. An array whose length divides evenly by the size is already correct and must not gain an empty chunk at the end.
+
+Expected: `[[1, 2], [3, 4], [5]]`
+Actual: `[[1, 2], [3, 4]]`
+
+The test in `test/chunk.test.ts` covers both cases.
+```
+
+Have that body on the clipboard before you walk on. Typing the title aloud is good theatre; typing four paragraphs is dead air.
+
+The last paragraph is the load-bearing one. It is what makes the analyst write two acceptance criteria instead of one, and two criteria ticking off separately is what the audience is actually watching in the left-hand column.
+
+### Why this bug and not another
+
+The fix is `i < items.length`, one character of real change.
+
+The trap underneath it is genuine: `i <= items.length` also makes the first test pass, and appends an empty chunk that breaks the second. All three states are verified: broken gives one fail and one pass, `<` gives two passes, `<=` flips which test fails. So when the reviewer answers the second criterion on screen, it is answering something that could honestly have gone wrong, which is the difference between a demo and a puppet show.
+
+### The backup bug
+
+If the primary run is consumed in the final rehearsal, or you want a second shot after a failure on stage, seed this one the same way.
+
+```sh
+cat > src/formatlist.ts <<'EOF'
+/** Joins a list into readable prose, such as "apples, pears and figs". */
+export const formatList = (items: readonly string[]): string => items.join(', ')
+EOF
+
+cat > test/formatlist.test.ts <<'EOF'
+import { expect, test } from 'bun:test'
+import { formatList } from '../src/formatlist'
+
+test('joins the last item with and', () => {
+  expect(formatList(['apples', 'pears', 'figs'])).toBe('apples, pears and figs')
+})
+
+test('uses and alone for two items', () => {
+  expect(formatList(['apples', 'pears'])).toBe('apples and pears')
+})
+
+test('leaves a single item as it is', () => {
+  expect(formatList(['apples'])).toBe('apples')
+})
+EOF
+```
+
+Baseline is two failures and one pass. Title: `formatList never joins the last item with and`. Same body shape: the call, the mechanism, expected, actual, and the file the test lives in.
 
 ---
 
@@ -37,7 +168,7 @@ The factory serves a dashboard of its own, and that is what the audience watches
    ```sh
    tail -f ~/.aalai/logs/aalai.out.log
    ```
-4. **A second browser tab** on the scratch repository's issues page.
+4. **A second browser tab** on `github.com/DaniAkash/aalai-demo/issues`.
 5. **A clean slate.** See [Resetting between rehearsals](#resetting-between-rehearsals).
 
 The dashboard carries the story and the terminal carries the proof. When you want the audience to believe the screen, point at the log.
@@ -60,16 +191,29 @@ Show that this is a service under `launchd`, not a script you are about to type.
 
 **Say:** this has been running on my laptop. It polls, it does not receive webhooks, and that is a deliberate choice.
 
-### 01:00 to 02:00 · File a real bug
+### 01:00 to 02:00 · File the bug
 
-In the browser, on the scratch repo, open a new issue. Read the title and the expected-versus-actual out loud as you write it.
+In the browser, on `DaniAkash/aalai-demo`, open a new issue. The exact title and body are in [The bug you seed](#the-bug-you-seed), already verified against the repository.
 
-Use a bug with **a failing test already in the repo**. That matters: it lets the agent confirm the baseline failure before fixing anything, which is the "evidence, not checkmarks" argument happening live rather than being asserted.
+Type the title live and read it aloud:
+
+```
+chunk drops the final partial chunk
+```
+
+Then paste the body and read the expected-versus-actual line out loud:
+
+```
+Expected: [[1, 2], [3, 4], [5]]
+Actual:   [[1, 2], [3, 4]]
+```
+
+**Say, while you paste:** there is already a failing test for this in the repository. The agent confirms that failure before it changes anything, which is the difference between a fix and a claim.
 
 ### 02:00 · Start the run, and start the clock
 
 ```sh
-bun run src/index.ts run <owner>/<repo> <issue-number>
+bun run src/index.ts run DaniAkash/aalai-demo <issue-number>
 ```
 
 Switch to the dashboard. The title fills in and `workspace` lights violet.
@@ -130,7 +274,13 @@ Back on the dashboard. Set a label requirement and file an issue without it:
 # in aalai.config.json, set:  "requireLabel": "aalai"
 ```
 
-File an unlabelled issue on the scratch repo and wait one poll tick. It appears in the dashboard footer under **turned away at the door**, in amber, with the reason.
+Then file an unlabelled issue and wait one poll tick:
+
+```sh
+gh issue create --repo DaniAkash/aalai-demo \
+  --title "titleCase mangles hyphenated names" \
+  --body "Reported by a stranger. No label."
+``` It appears in the dashboard footer under **turned away at the door**, in amber, with the reason.
 
 Nothing was cloned. No agent ran. The decision happened at the door, from the API response, before any model saw anything.
 
@@ -206,7 +356,7 @@ gh issue reopen <issue-number> --repo <owner>/<repo>
 git -C ~/workbench/<owner>/<repo> worktree prune
 ```
 
-For a fresh bug instead of a replay, add a new broken helper with a failing test, push it, and file a new issue. That is the cleanest rehearsal loop and it is what every run in the repository's history was built on.
+For a fresh bug instead of a replay, seed another helper the same way: see [The bug you seed](#the-bug-you-seed) for the shape, the baseline check, and the backup already written for you. That is the cleanest rehearsal loop and it is what every run in the repository's history was built on.
 
 ---
 
