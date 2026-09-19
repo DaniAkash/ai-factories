@@ -59,7 +59,7 @@ class: 'dark'
       <div class="stack">
         <div class="meta-row" style="flex-direction:column;gap:18px;align-items:flex-start">
           <span class="mist">Work</span>
-          <span style="font-size:27px;text-transform:none;letter-spacing:normal;color:var(--color-bone-white)">browseros.com</span>
+          <span style="font-size:27px;text-transform:none;letter-spacing:normal;color:var(--ink)">browseros.com</span>
         </div>
         <div class="meta-row" style="flex-direction:column;gap:18px;align-items:flex-start;margin-top:18px">
           <span class="mist">Open source</span>
@@ -151,8 +151,8 @@ class: 'dark'
       <div class="kicker">THE RATIO NOBODY SHOWS YOU</div>
       <h2 class="t-lg" style="margin-bottom:60px">30 <span class="dim">/</span> <span class="accent">70</span></h2>
       <div class="ratio">
-        <span style="flex:30;background:var(--color-bone-white)"></span>
-        <span style="flex:70;background:var(--color-electric-iris)"></span>
+        <span style="flex:30;background:var(--ink)"></span>
+        <span style="flex:70;background:var(--accent)"></span>
       </div>
       <div style="display:flex;gap:36px;margin-top:27px">
         <p class="caption" style="flex:30">The conveyor belt. The part every talk demos.</p>
@@ -175,16 +175,16 @@ class: 'dark'
       <h2 class="t-md" style="margin-bottom:54px">Three lanes, not one belt.</h2>
       <div class="cols-3">
         <div>
-          <div class="t-xs" style="color:var(--color-bone-white)">The work</div>
-          <p class="body muted" style="font-size:21px;margin-top:18px">Five stations with machine-checkable output. Issue in, branch out. Genuinely a weekend.</p>
+          <div class="t-xs" style="color:var(--ink)">The work</div>
+          <p class="body muted" style="font-size:24px;margin-top:18px">Five stations with machine-checkable output. Issue in, branch out. Genuinely a weekend.</p>
         </div>
         <div>
           <div class="t-xs accent">The trust</div>
-          <p class="body muted" style="font-size:21px;margin-top:18px">Who asked, what were they allowed to ask for, what may this run touch. Decided once, at the door.</p>
+          <p class="body muted" style="font-size:24px;margin-top:18px">Who asked, what were they allowed to ask for, what may this run touch. Decided once, at the door.</p>
         </div>
         <div>
           <div class="t-xs spark">The memory</div>
-          <p class="body muted" style="font-size:21px;margin-top:18px">What survives the run, who may write to it, and how stations hand over documents too big to pass along.</p>
+          <p class="body muted" style="font-size:24px;margin-top:18px">What survives the run, who may write to it, and how stations hand over documents too big to pass along.</p>
         </div>
       </div>
     </div>
