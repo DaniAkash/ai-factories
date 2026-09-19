@@ -51,7 +51,7 @@ Topics include:
 
 The demo is a factory running live on the speaker's own machine. In the 30 minute cut it is half the talk: an issue filed on stage, the worktree and the claim table opened while the run works, the pull request read as an evidence chain, the trust gate refusing an untrusted issue, and a rule changed on stage to watch the behaviour move.
 
-The beat-by-beat script, every command, the fallbacks, and the reset procedure are in [`demo.md`](./demo.md).
+The factory serves a dashboard of its own showing the pipeline as it runs: each station drawn as a station, and the acceptance criteria being answered one at a time against the real diff. The beat-by-beat script, every command, the fallbacks, and the reset procedure are in [`demo.md`](./demo.md).
 
 The twelve invariants the talk draws on are listed in the 45 minute deck and in the anatomy section above.
 
