@@ -13,8 +13,9 @@ Slides and demo for the talk **"Automate your software delivery with AI Factorie
 ```
 .
 ├── slides/
-│   ├── slides.md         30 minute cut, 22 slides  (the default)
+│   ├── slides.md         30 minute cut, 23 slides  (the default)
 │   └── slides-45min.md   45 minute cut, 61 slides
+├── demo.md               Runbook for the live demo: beats, commands, fallbacks
 └── design.md             Style reference: tokens, components, do's and don'ts
 ```
 
@@ -49,6 +50,8 @@ Topics include:
 - Why an end-to-end demo validates the pipeline and never its failure modes
 
 The demo is a factory running live on the speaker's own machine. In the 30 minute cut it is half the talk: an issue filed on stage, the worktree and the claim table opened while the run works, the pull request read as an evidence chain, the trust gate refusing an untrusted issue, and a rule changed on stage to watch the behaviour move.
+
+The beat-by-beat script, every command, the fallbacks, and the reset procedure are in [`demo.md`](./demo.md).
 
 The twelve invariants the talk draws on are listed in the 45 minute deck and in the anatomy section above.
 
