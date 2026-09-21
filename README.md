@@ -4,9 +4,11 @@ Slides and demo for the talk **"Automate your software delivery with AI Factorie
 
 > An AI software factory is a delivery pipeline where every stage is an agent: one triages the issue, one writes the spec, one implements it, one reviews it, and a human still owns the merge.
 
-**Event:** TBA
+**Slides:** [ai-factories.vercel.app](https://ai-factories.vercel.app) (the 30 minute cut)
 
-**Recording:** TBA
+**Recording:** [YouTube, talk starts at 2:34:15](https://www.youtube.com/live/7dc6tJOG_Yo?t=9255)
+
+**Event:** [luma.com/49bulo2m](https://luma.com/49bulo2m)
 
 ## Repo layout
 
